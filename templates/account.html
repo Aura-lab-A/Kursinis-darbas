@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Account Page{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('logout') }}">Atsijungti</a>
+
+    <h4>Profilis</h4>
+
+<p>Name: {{ current_user.name }}</p>
+<p>Email: {{ current_user.email }}</p>
+
+{% endblock %}

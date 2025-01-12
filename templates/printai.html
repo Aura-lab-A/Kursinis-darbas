@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block title %}Printai Page{% endblock %}
+{% block content %}
+
+    <div>
+        <div class="slider-frame">
+            <!-- <div class="slider-images"> -->
+            <div class="image-container">
+                <img src="{{url_for('static', filename='images/Print 1.jpg')}}">
+            </div>
+            <!-- </div> -->
+        </div>
+    </div>
+    <div>
+        <h2>PRINT'AI: rankomis atspausti lino raižiniai</h2>
+    </div>
+
+<!-- Sutvarkyti -->
+    <!-- <ul>
+        {% for printas in printai %}
+            <li> {{ print.name }}</li>
+        {% endfor %}
+    </ul> -->
+
+    <div class="printai">
+        {% for printas in all_prints %}
+            <div class="print">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">   <!-- Kiekvieno prod nuotrauka -->
+                </div>
+                <div class="product-name-price">
+                    <h4>{{ printas.name }}</h4>
+                    <p>{{ printas.price }}EUR</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+
+            <!-- <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+        </div>
+        <div class="product-row">
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+        </div>
+        <div class="product-row">
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+        </div>
+        <div class="product-row">
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+            <div class="product">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+                </div>
+                <div class="product-name-price">
+                    <h4>FLOW</h4>
+                    <p>30 EUR</p>
+                </div>
+            </div>
+        </div> -->
+
+    <div>
+        {% for page_number in all_prints.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+            {% if page_number %}
+                {% if page_number==all_prints.page %}
+                    <span style="color: red">{{page_number}}</span>
+                {% else %}
+                    <span><a href="{{url_for('printai', page=page_number)}}">{{page_number}}</a></span>
+                {% endif %}
+            {% else %}
+                <span>...</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

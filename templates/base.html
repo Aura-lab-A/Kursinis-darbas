@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> -->
+</head>
+<body>
+    <header>
+        <div class="container1">
+            <!-- <div class="picture-section"> -->
+            <img src="{{url_for('static', filename='images/heart.jpg')}}">
+            <!-- </div> -->
+            <p>where the heart is</p>
+            <div>
+                <div class="search-container">
+                    <form action="/action_page.php"> <!-- reikia normalaus action -->
+                        <input type="text" placeholder="Ieškoti..." name="search">
+                        <button type="submit"></button>
+                    </form>
+                </div>
+                <div>
+                    {% if current_user.is_authenticated %}
+                    <div id="person">
+                        <form action="/account"> <!-- reikia normalaus action -->
+                            <button type="submit" class="person"></button>
+                        </form>    
+                    </div>
+                    {% else %}  
+                    <div id="person">
+                        <form action="/login"> <!-- reikia normalaus action -->
+                            <button type="submit" class="person"></button>
+                        </form>    
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <div id="chart">
+                        <form action="/action_page.php"> <!-- reikia normalaus action -->
+                            <button type="submit" class="chart"></button>
+                        </form>    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container2">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}">PRADŽIA</a></li>
+                    <li class="dropdown">
+                        <button class="drop-button">GAMINIAI</button>
+                        <div class="dropdown-content">
+                          <a href="{{ url_for('printai') }}">PRINT'AI</a>
+                          <a href="{{ url_for('zvakes') }}">ŽVAKĖS</a>
+                          <a href="{{ url_for('kazkas') }}">KAŽKAS</a>
+                        </div>
+                    </li>
+                    <li><a href="{{ url_for('apie_mus') }}">APIE MUS</a></li>
+                    <li><a href="{{ url_for('home') }}#kontaktai">KONTAKTAI</a></li>
+                    <!-- Gal dar reikia kūrybos istorijų? -->
+                </ul>
+            </nav>   
+        </div>
+    </header>
+
+    <main>
+        {% block content %} {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 where the heart is</p>
+    </footer>
+</body>
+</html>

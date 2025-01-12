@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Index Page{% endblock %}
+{% block content %}
+    <h1>Hello, World!</h1>
+
+    <title>Flexbox Example</title>
+        <style>
+            .container {
+                display: flex;
+                justify-content: space-between;
+            }
+            .left-items {
+                display: flex;
+                justify-content: space-between;
+                flex: 1;
+            }
+            .right-items {
+                display: flex;
+                justify-content: flex-end;
+            }
+            .item {
+                margin: 0 10px;
+            }
+        </style>
+
+    <body>
+        <div class="container">
+            <div class="left-items">
+                <div class="item">Item 1</div>
+                <div class="item">Item 2</div>
+                <div class="item">Item 3</div>
+            </div>
+            <div class="right-items">
+                <div class="item">Item 4</div>
+                <div class="item">Item 5</div>
+                <div class="item">Item 6</div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
+
+    {% for post in posts %}
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.date }}, {{ post.author }}</p>
+        <hr>
+        <p>{{ post.content }}</p>
+        <hr>    
+    {% endfor %}
+{% endblock %}

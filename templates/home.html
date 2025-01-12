@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Index Page{% endblock %}
+{% block content %}
+    <div>
+        <div class="slider-frame">
+            <div class="slider-images">
+                <div class="image-container">
+                    <img src="{{url_for('static', filename='images/Print 1.jpg')}}">
+                </div>
+                <div class="image-container">
+                    <img src="{{url_for('static', filename='images/Zvake 1.jpg')}}">
+                </div>
+                <div class="image-container">
+                    <img src="{{url_for('static', filename='images/Kazkas 1.jpg')}}">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h2>Tai, kas sušildo širdį...</h2>
+    </div>
+    <div class="things-section">
+        <div class="text-box">
+            <h4>PRINT'AI</h4>
+            <p>Rankų darbo printai bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</p>
+        </div>
+        <div class="picture-box">
+            <img src="{{url_for('static', filename='images/Print 1.jpg')}}">
+        </div>
+    </div>
+    <div class="things-section">
+        <div class="picture-box">
+            <img src="{{url_for('static', filename='images/Zvake 1.jpg')}}">
+        </div>
+        <div class="text-box">
+            <h4 class="text-box-right">ŽVAKĖS</h4>
+            <p class="text-box-right">Rankų darbo printai bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</p>
+        </div>
+    </div>
+    <div class="things-section">
+        <div class="text-box">
+            <h4>KAŽKAS</h4>
+            <p>Rankų darbo printai bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</p>
+        </div>
+        <div class="picture-box">
+            <img src="{{url_for('static', filename='images/Kazkas 1.jpg')}}">
+        </div>
+    </div>
+    <!-- Gal reikia dar nuorodos su nuotrauka į kūrybos istorijas? -->
+    <h3 id="kontaktai">SUSISIEKITE SU MUMIS</h3>
+    <div class="contacts-legal">
+        <div class="contacts">
+            <ul>
+                <li><a>Vardas Pavardė</a></li>
+                <li><a>IV pažymos nr. XXXXX</a></li>
+                <li><a>info@wheretheheartis.com</a></li>
+                <li><a>+370 XXX XX XXX</a></li>
+            </ul>
+        </div>
+        <div class="contact-form">
+            <h4>Kontaktinė forma</h4>
+<!-- reikia užpildyti -->
+        </div>
+        <div class="legal">
+            <ul>
+                <li><a>Privatumo politika</a></li>
+                <li><a>Taisyklės ir sąlygos</a></li>
+                <li><a>Pristatymas ir atsiskaitmas</a></li>
+                <li><a>Grąžinimas</a></li>
+            </ul>
+        </div>
+    </div>
+
+
+    <p>{{ posts }}</p>
+    {% for post in posts %}
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.date }}, {{ post.author }}</p>
+        <hr>
+        <p>{{ post.content }}</p>
+        <hr>    
+    {% endfor %}
+{% endblock %}
