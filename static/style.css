@@ -1,3 +1,7 @@
+html {
+    width: 100%;
+}
+
 /* Header */
 
 header {
@@ -188,6 +192,8 @@ header {
 /* Body */
 
 body {
+    width: 100%;
+    min-height: 100vh;
     font-family: Arial, Helvetica, sans-serif;
     background-color: #ffffff;
     margin: 0px;
@@ -198,28 +204,28 @@ body {
 
 .slider-frame {
     overflow: hidden;
-    width: 1511px;
+    width: 100%;
     height: 500px;
     position: relative;
     z-index: 1;
 }
 
 @keyframes slide_animation {
-    0% {left: 0px;}
-    10% {left: 0px;}
-    20% {left: -1511px;}
-    30% {left: -1511px;}
-    40% {left: -3022px;}
-    50% {left: -3022px;}
-    60% {left: -1511px;}
-    70% {left: -1511px;}
-    80% {left: 0px;}
-    90% {left: 0px;}
-    100% {left: 0px;}
+    0% {left: 0%;}
+    10% {left: 0%;}
+    20% {left: -100%;}
+    30% {left: -100%;}
+    40% {left: -200%;}
+    50% {left: -200%;}
+    60% {left: -100%;}
+    70% {left: -100%;}
+    80% {left: 0%;}
+    90% {left: 0%;}
+    100% {left: 0%;}
 }
 
 .slider-images {
-    width: 4533px;
+    width: 300%;
     height: 500px;
     position: relative;
     animation-name: slide_animation;
@@ -232,7 +238,7 @@ body {
 .image-container {
     /* position: absolute; */
     float: left;
-    width: 1511px;
+    width: 100%;
     height: 500px;
     margin: 0;
 }
@@ -240,7 +246,7 @@ body {
 .image-container img {
     /* position: absolute; */
     /* float: left; */
-    width: 100%;
+    width: 33.33%;
     height: 100%;
     margin: 0;
     object-fit: cover;
@@ -281,6 +287,22 @@ h2 {
     height: 100%;
     margin: 0;
     object-fit: cover;
+}
+
+.picture-box-things {
+    display: flex;
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 800px;
+    height: 600px;
+}
+
+.picture-box-things img {
+    width: 60%;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 10px;
+    /* object-fit: cover; */
 }
 
 h3 {

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Index Page{% endblock %}
+{% block content %}
+
+<div class="things-section">
+    <div class="text-box">
+        <p>PRINT'AI</p>
+        <h2>PAVADINIMAS</h2>
+        <p>Rankų darbo printai bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</p>
+        <div>
+            <ul>
+                <li class="dropdown">
+                    <button class="drop-button">Pasirinkite dydį</button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('printai') }}">20X30</a>
+                        <a href="{{ url_for('zvakes') }}">40X90</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <ul>
+                <li class="dropdown">
+                    <button class="drop-button">Pasirinkite koloritą</button>
+                    <div class="dropdown-content">
+                        <a href="{{ url_for('printai') }}">Juodas</a>
+                        <a href="{{ url_for('zvakes') }}">Raudona</a>
+                        <a href="{{ url_for('zvakes') }}">Smėlinė</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <p>Kaina: XX EUR</p>
+        </div>
+        <div>
+            <p>Į krepšelį</p>
+            <div>
+                <form action="/login"> <!-- reikia normalaus action -->
+                    <button type="submit">Į krepšelį</button>
+                </form>    
+            </div>
+        </div>
+    </div>
+    <div class="picture-box-things">
+        <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+        <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+    </div>
+</div>
+<div>
+    <h2>ISTORIJA?</h2>
+</div>
+<div>
+    <div class="slider-frame">
+        <!-- <div class="slider-images"> -->
+        <div class="image-container">
+            <img src="{{url_for('static', filename='images/Print 1.jpg')}}">
+        </div>
+        <!-- </div> -->
+    </div>
+</div>
+<div>
+    <h2>PANAŠIOS PREKĖS</h2>
+    <div class="printai">
+        {% for printas in all_prints %}
+            <div class="print">
+                <div class="product-image">
+                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">   <!-- Kiekvieno prod nuotrauka -->
+                </div>
+                <div class="product-name-price">
+                    <h4>{{ printas.name }}</h4>
+                    <p>{{ printas.price }}EUR</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

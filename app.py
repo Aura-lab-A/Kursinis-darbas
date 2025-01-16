@@ -203,6 +203,10 @@ def zvakes() -> Response:
 def kazkas() -> Response:
     return render_template('kazkas.html')
 
+@app.route('/produktas')
+def productas() -> Response:
+    return render_template('produktas.html')
+
 @app.route('/apie_mus')
 def apie_mus() -> Response:
     return render_template('apie_mus.html')
