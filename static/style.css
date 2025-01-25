@@ -236,7 +236,7 @@ body {
 }
 
 .image-container {
-    /* position: absolute; */
+    position: absolute;
     float: left;
     width: 100%;
     height: 500px;
@@ -244,8 +244,7 @@ body {
 }
 
 .image-container img {
-    /* position: absolute; */
-    /* float: left; */
+    float: left;
     width: 33.33%;
     height: 100%;
     margin: 0;

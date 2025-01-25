@@ -24,24 +24,60 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 login_manager.login_message = 'Log in to see this page.'
 
- 
+
+# Users 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False) #Should it be unique?
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False) 
+    password = db.Column(db.String(120), nullable=False) #Should it be nullab;e?
 
-# Print'ai
-class Printai(db.Model):
-    __tablename__ = 'printai'
+
+# Produktai
+product_size_association = db.Table('product_size',
+    db.Column('products_id', db.Integer, db.ForeignKey('products.id')),
+    db.Column('sizes_id', db.Integer, db.ForeignKey('sizes.id'))
+)
+
+product_color_association = db.Table('product_color',
+    db.Column('products_id', db.Integer, db.ForeignKey('products.id')),
+    db.Column('colors_id', db.Integer, db.ForeignKey('colors.id'))
+)
+
+class Product(db.Model):
+    __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)    #unique=True
-    photo = db.Column(db.String(120), nullable=False)    #unique=True
     description = db.Column(db.String(120), nullable=False)  #unique=True
-    size1 = db.Column(db.String(120), nullable=False)
-    size2 = db.Column(db.String(120), nullable=False)
     price = db.Column(db.String(120), nullable=False)
+    category = db.Column(db.String(120), nullable=False)
+    photos = db.relationship('Photo', back_populates='product')
+    sizes = db.relationship('Size', secondary=product_size_association, back_populates='products')
+    colors = db.relationship('Color', secondary=product_color_association, back_populates='products')
+
+
+class Photo(db.Model):
+    __tablename__ = 'photos'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)    #unique=True
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product = db.relationship('Product', back_populates='photos')
+
+
+class Size(db.Model):
+    __tablename__ = 'sizes'
+    id = db.Column(db.Integer, primary_key=True)
+    size = db.Column(db.String(120), nullable=False)    #unique=True
+    products = db.relationship('Product', secondary=product_size_association, back_populates='sizes')
+
+
+class Color(db.Model):
+    __tablename__ = 'colors'
+    id = db.Column(db.Integer, primary_key=True)
+    color = db.Column(db.String(120), nullable=False)    #unique=True
+    products = db.relationship('Product', secondary=product_color_association, back_populates='colors')
+
 
 # Prekės
 # class Entry(db.Model):
@@ -59,7 +95,7 @@ class ManoModelView(ModelView):
         return current_user.is_authenticated and current_user.email == "aura.aura@gmail.com"
     
 admin = Admin(app)
-admin.add_view(ModelView(Printai, db.session))
+admin.add_view(ModelView(Product, db.session))
 admin.add_view(ManoModelView(User, db.session))
 
 @login_manager.user_loader
@@ -191,8 +227,8 @@ def logout():
 @app.route('/printai')
 def printai() -> Response:
     page = request.args.get('page', 1, type=int)
-    all_prints = Printai.query.all()
-    all_prints = Printai.query.paginate(page=page, per_page=6)
+    all_prints = Product.query.filter(Product.category =='print').all()
+    all_prints = Product.query.paginate(page=page, per_page=6)
     return render_template('printai.html', all_prints=all_prints)   #Cia tretu buti "printai"?
 
 @app.route('/zvakes')
@@ -204,7 +240,7 @@ def kazkas() -> Response:
     return render_template('kazkas.html')
 
 @app.route('/produktas')
-def productas() -> Response:
+def produktas() -> Response:
     return render_template('produktas.html')
 
 @app.route('/apie_mus')
