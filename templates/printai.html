@@ -26,13 +26,17 @@
         {% for print in all_prints %}
             <div class="print">
                 <div class="product-image">
-                    <a href="{{ url_for('produktas') }}">
-                        <img src="{{ url_for('static', filename='images/' + print.photos.name) }}"> 
+                    <a href="{{ url_for('product') }}">
+                        {% for photo in all_photos %}
+                            {% if photo.product_id == print.id %}                        
+                                <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
+                            {% endif %}
+                        {% endfor %}                                 
                     </a>
                 </div>
                 <div class="product-name-price">
-                    <a href="{{ url_for('produktas') }}">
-                        <h4>{{ print.name }}</h4>
+                    <a href="{{ url_for('product') }}">
+                        <h4>{{ print.name }}</h4>  
                     </a>
                     <p>{{ print.price }} EUR</p>
                 </div>
