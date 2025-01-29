@@ -227,11 +227,10 @@ def logout():
 @app.route('/printai')
 def printai() -> Response:
     page = request.args.get('page', 1, type=int)
-    all_prints = Product.query.filter(Product.category =='print').all()
-    all_prints = Product.query.paginate(page=page, per_page=6)
+    all_prints = Product.query.filter(Product.category =='print').paginate(page=page, per_page=6)
     print_ids = [print_item.id for print_item in all_prints.items]
     all_photos = Photo.query.filter(Photo.product_id.in_(print_ids)).all()
-    return render_template('printai.html', all_prints=all_prints, all_photos=all_photos)   #Cia tretu buti "printai"?
+    return render_template('printai.html', all_prints=all_prints, all_photos=all_photos)
 
 @app.route('/zvakes')
 def zvakes() -> Response:
@@ -241,9 +240,10 @@ def zvakes() -> Response:
 def kazkas() -> Response:
     return render_template('kazkas.html')
 
-@app.route('/product')
+@app.route('/produktas/{product.id}')
 def produktas() -> Response:
-    return render_template('product.html')
+    produktas = Product.query.get(product.id)
+    return render_template('produktas.html', produktas=produktas)
 
 @app.route('/apie_mus')
 def apie_mus() -> Response:
