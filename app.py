@@ -240,10 +240,16 @@ def zvakes() -> Response:
 def kazkas() -> Response:
     return render_template('kazkas.html')
 
-@app.route('/produktas/{product.id}')
-def produktas() -> Response:
-    produktas = Product.query.get(product.id)
-    return render_template('produktas.html', produktas=produktas)
+@app.route('/produktas/<int:product_id>')
+def produktas(product_id) -> Response:
+    produktas = Product.query.get(product_id)
+    sizes = Size.query.filter(Size.products.any(id=product_id)).all()
+    colors = Color.query.filter(Color.products.any(id=product_id)).all()
+    photos = Photo.query.filter(Photo.product_id == product_id).all()
+    all_prints = Product.query.filter(Product.category =='print').all()
+    print_ids = [print.id for print in all_prints]
+    all_photos = Photo.query.filter(Photo.product_id.in_(print_ids)).all()
+    return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, all_prints=all_prints, all_photos=all_photos)
 
 @app.route('/apie_mus')
 def apie_mus() -> Response:

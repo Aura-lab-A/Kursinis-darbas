@@ -5,37 +5,30 @@
 <div class="things-section">
     <div class="text-box">
         <p>PRINT'AI</p>
-        <h2>PAVADINIMAS</h2>
-        <h2>{ produktas.name }</h2>
-        <p>Rankų darbo printai bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla...</p>
+        <h2>{{ produktas.name }}</h2>
+        <p>{{ produktas.description }}</p>
         <div>
-            <ul>
-                <li class="dropdown">
-                    <button class="drop-button">Pasirinkite dydį</button>
-                    <div class="dropdown-content">
-                        <a href="{{ url_for('printai') }}">20X30</a>
-                        <a href="{{ url_for('zvakes') }}">40X90</a>
-                    </div>
-                </li>
-            </ul>
+            <label for="cars">Pasirinkite dydį</label>
+            <select name="subject" id="subject">
+                <option value="" selected="selected">Pasirinkite...</option>
+                {% for size in sizes %}
+                    <option value="" selected="selected">{{ size.size }}</option>
+                {% endfor %}
+            </select>
         </div>
         <div>
-            <ul>
-                <li class="dropdown">
-                    <button class="drop-button">Pasirinkite koloritą</button>
-                    <div class="dropdown-content">
-                        <a href="{{ url_for('printai') }}">Juodas</a>
-                        <a href="{{ url_for('zvakes') }}">Raudona</a>
-                        <a href="{{ url_for('zvakes') }}">Smėlinė</a>
-                    </div>
-                </li>
-            </ul>
+            <label for="cars">Pasirinkite koloritą</label>
+            <select name="subject" id="subject">
+                <option value="" selected="selected">Pasirinkite...</option>
+                {% for color in colors %}
+                    <option value="" selected="selected">{{ color.color }}</option>
+                {% endfor %}
+            </select>
         </div>
         <div>
-            <p>Kaina: XX EUR</p>
+            <p>Kaina: {{ produktas.price }} EUR</p>
         </div>
         <div>
-            <p>Į krepšelį</p>
             <div>
                 <form action="/login"> <!-- reikia normalaus action -->
                     <button type="submit">Į krepšelį</button>
@@ -44,8 +37,9 @@
         </div>
     </div>
     <div class="picture-box-things">
-        <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
-        <img src="{{url_for('static', filename='images/Print 2.jpg')}}">
+        {% for photo in photos %}
+            <img src="{{url_for('static', filename='images/'+ photo.name)}}">
+        {% endfor %}
     </div>
 </div>
 <div>
@@ -63,16 +57,24 @@
 <div>
     <h2>PANAŠIOS PREKĖS</h2>
     <div class="printai">
-        {% for printas in all_prints %}
-            <div class="print">
-                <div class="product-image">
-                    <img src="{{url_for('static', filename='images/Print 2.jpg')}}">   <!-- Kiekvieno prod nuotrauka -->
-                </div>
-                <div class="product-name-price">
-                    <h4>{{ printas.name }}</h4>
-                    <p>{{ printas.price }}EUR</p>
-                </div>
-            </div>
+        {% for print in all_prints %}
+                    <div class="print">
+                        <div class="product-image">
+                            <a href="{{ url_for('produktas', product_id=print.id) }}">
+                                {% for photo in all_photos %}
+                                    {% if photo.product_id == print.id %}                        
+                                        <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
+                                    {% endif %}
+                                {% endfor %}                                 
+                            </a>
+                        </div>
+                        <div class="product-name-price">
+                            <a href="{{ url_for('produktas', product_id=print.id) }}">
+                                <h4>{{ print.name }}</h4>  
+                            </a>
+                            <p>{{ print.price }} EUR</p>
+                        </div>
+                    </div>
         {% endfor %}
     </div>
 </div>
