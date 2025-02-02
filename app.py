@@ -2,8 +2,8 @@ from flask import Flask, render_template, request, Response, redirect, url_for, 
 import os
 import app
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, FloatField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, FloatField, IntegerField, DecimalField
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, NumberRange
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
@@ -50,7 +50,8 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)    #unique=True
     description = db.Column(db.String(120), nullable=False)  #unique=True
-    price = db.Column(db.String(120), nullable=False)
+    price = db.Column(db.Float(120), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
     category = db.Column(db.String(120), nullable=False)
     photos = db.relationship('Photo', back_populates='product')
     sizes = db.relationship('Size', secondary=product_size_association, back_populates='products')
@@ -79,16 +80,18 @@ class Color(db.Model):
     products = db.relationship('Product', secondary=product_color_association, back_populates='colors')
 
 
-# Prekės
-# class Entry(db.Model):
-#     __tablename__ = 'entries'
-#     id = db.Column(db.Integer, primary_key=True)
-#     date = db.Column(DateTime, default=datetime.now())
-#     income = db.Column(db.Boolean)
-#     sum = db.Column(db.Float)
-#     warning
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-#     user = db.relationship('User', lazy=True)
+class OrderedItems(db.Model):
+    __tablename__ = 'ordered_items'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, nullable=False)
+    product_name = db.Column(db.String(120), nullable=False)
+    size = db.Column(db.String(120), nullable=False)
+    color = db.Column(db.String(120), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float(120), nullable=False)
+    oder_no = db.Column(db.Integer, nullable=False)
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # user = db.relationship('User', lazy=True)
 
 class ManoModelView(ModelView):
     def is_accessible(self):
@@ -136,6 +139,19 @@ class LoginForm(FlaskForm):
 #     name = StringField('Vardas', [DataRequired()])
 #     email = StringField('El. paštas', [DataRequired(), Email()])
 #     submit = SubmitField('Atnaujinti')
+
+
+class OrderItemForm(FlaskForm):
+    product_id = IntegerField('Produkto ID', validators=[DataRequired()])
+    product_name = StringField('Producto vardas', validators=[DataRequired()])
+    size = StringField('Produkto dydis', validators=[DataRequired()])
+    color = StringField('Produkto spalva', validators=[DataRequired()])
+    quantity = IntegerField('Kiekis', validators=[DataRequired(), NumberRange(min=0)])
+    price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
+    submit = SubmitField('Į krepšelį')
+
+
+
 
 @app.route('/base')
 def base() -> Response:
@@ -240,16 +256,39 @@ def zvakes() -> Response:
 def kazkas() -> Response:
     return render_template('kazkas.html')
 
-@app.route('/produktas/<int:product_id>')
+@app.route('/produktas/<int:product_id>', methods=['GET', 'POST'])
 def produktas(product_id) -> Response:
     produktas = Product.query.get(product_id)
+    max_quantity = produktas.quantity
     sizes = Size.query.filter(Size.products.any(id=product_id)).all()
     colors = Color.query.filter(Color.products.any(id=product_id)).all()
     photos = Photo.query.filter(Photo.product_id == product_id).all()
     all_prints = Product.query.filter(Product.category =='print').all()
     print_ids = [print.id for print in all_prints]
     all_photos = Photo.query.filter(Photo.product_id.in_(print_ids)).all()
-    return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, all_prints=all_prints, all_photos=all_photos)
+    return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, max_quantity=max_quantity, all_prints=all_prints, all_photos=all_photos)
+
+
+    # form = OrderItemForm()
+    # if form.validate_on_submit():
+    #     new_ordered_item = OrderedItems(
+    #         product_id = form.product_id.data,
+    #         product_name = form.product_name.data,
+    #         size = form.size.data,
+    #         color = form.color.data,
+    #         # quantity = form.quantity.data,
+    #         price = form.price.data,
+    #         oder_no = ''
+    #         )
+    #     db.session.add(new_ordered_item)
+    #     db.session.commit()
+    #     flash('Produktas perkeltas į krepšelį!', 'success')
+    #     return redirect(url_for('produktas'))
+
+
+@app.route('/chart')
+def chart() -> Response:
+    return render_template('chart.html')
 
 @app.route('/apie_mus')
 def apie_mus() -> Response:
