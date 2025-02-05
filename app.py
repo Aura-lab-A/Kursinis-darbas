@@ -258,32 +258,36 @@ def kazkas() -> Response:
 
 @app.route('/produktas/<int:product_id>', methods=['GET', 'POST'])
 def produktas(product_id) -> Response:
-    produktas = Product.query.get(product_id)
-    max_quantity = produktas.quantity
-    sizes = Size.query.filter(Size.products.any(id=product_id)).all()
-    colors = Color.query.filter(Color.products.any(id=product_id)).all()
-    photos = Photo.query.filter(Photo.product_id == product_id).all()
-    all_prints = Product.query.filter(Product.category =='print').all()
-    print_ids = [print.id for print in all_prints]
-    all_photos = Photo.query.filter(Photo.product_id.in_(print_ids)).all()
-    return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, max_quantity=max_quantity, all_prints=all_prints, all_photos=all_photos)
-
-
+    if request.method == 'GET':
+        produktas = Product.query.get(product_id)
+        max_quantity = produktas.quantity
+        sizes = Size.query.filter(Size.products.any(id=product_id)).all()
+        colors = Color.query.filter(Color.products.any(id=product_id)).all()
+        photos = Photo.query.filter(Photo.product_id == product_id).all()
+        all_prints = Product.query.filter(Product.category =='print').all()
+        print_ids = [print.id for print in all_prints]
+        all_photos = Photo.query.filter(Photo.product_id.in_(print_ids)).all()
+        return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, max_quantity=max_quantity, all_prints=all_prints, all_photos=all_photos)
+    
+    else:
+        print(request.form)
     # form = OrderItemForm()
     # if form.validate_on_submit():
-    #     new_ordered_item = OrderedItems(
-    #         product_id = form.product_id.data,
-    #         product_name = form.product_name.data,
-    #         size = form.size.data,
-    #         color = form.color.data,
-    #         # quantity = form.quantity.data,
-    #         price = form.price.data,
-    #         oder_no = ''
-    #         )
-    #     db.session.add(new_ordered_item)
-    #     db.session.commit()
-    #     flash('Produktas perkeltas į krepšelį!', 'success')
-    #     return redirect(url_for('produktas'))
+        produktas = Product.query.get(product_id)
+        new_ordered_item = OrderedItems(
+            product_id = produktas.id,
+            product_name = produktas.name,
+            size = request.form.get("size"),
+            color = request.form.get("color"),
+            quantity = int(request.form.get("quantity")),
+            price = produktas.price,
+            oder_no = 'random generator'
+            )
+        db.session.add(new_ordered_item)
+        db.session.commit()
+        flash('Produktas perkeltas į krepšelį!', 'success')
+        return redirect(url_for('produktas', product_id = product_id))
+
 
 
 @app.route('/chart')
