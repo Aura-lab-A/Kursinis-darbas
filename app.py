@@ -9,6 +9,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_bcrypt import Bcrypt
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+import random
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -80,6 +81,7 @@ class Color(db.Model):
     products = db.relationship('Product', secondary=product_color_association, back_populates='colors')
 
 
+# Užsakymas
 class OrderedItems(db.Model):
     __tablename__ = 'ordered_items'
     id = db.Column(db.Integer, primary_key=True)
@@ -92,6 +94,18 @@ class OrderedItems(db.Model):
     oder_no = db.Column(db.Integer, nullable=False)
     # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # user = db.relationship('User', lazy=True)
+
+class Orders(db.Model):
+    __tablename__ = 'orders'
+    id = db.Column(db.Integer, primary_key=True)
+    order_no = db.Column(db.Integer, nullable=False)
+    created_on = db.Column(db.String(120), nullable=False)     #date????
+    total_price = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(120), nullable=False)   #list of statuse
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # user = db.relationship('User', lazy=True)    
+
+
 
 class ManoModelView(ModelView):
     def is_accessible(self):
@@ -148,9 +162,16 @@ class OrderItemForm(FlaskForm):
     color = StringField('Produkto spalva', validators=[DataRequired()])
     quantity = IntegerField('Kiekis', validators=[DataRequired(), NumberRange(min=0)])
     price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
+    # user_id
     submit = SubmitField('Į krepšelį')
 
-
+class Orders(FlaskForm):
+    order_no = IntegerField('Užsakymo ID', validators=[DataRequired()])
+    created_on = StringField('Data', validators=[DataRequired()])     #date????
+    total_price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
+    status = StringField('Statusas', validators=[DataRequired()])  #list of statuses
+    # user_id 
+    submit = SubmitField('Pateikti užsakymą')
 
 
 @app.route('/base')
@@ -261,16 +282,19 @@ def produktas(product_id) -> Response:
     if request.method == 'GET':
         produktas = Product.query.get(product_id)
         max_quantity = produktas.quantity
-        sizes = Size.query.filter(Size.products.any(id=product_id)).all()
-        colors = Color.query.filter(Color.products.any(id=product_id)).all()
-        photos = Photo.query.filter(Photo.product_id == product_id).all()
-        all_prints = Product.query.filter(Product.category =='print').all()
-        print_ids = [print.id for print in all_prints]
-        all_photos = Photo.query.filter(Photo.product_id.in_(print_ids)).all()
-        return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, max_quantity=max_quantity, all_prints=all_prints, all_photos=all_photos)
+        sizes = produktas.sizes
+        colors = produktas.colors
+        photos = produktas.photos
+        other_products = Product.query.filter(
+            Product.category == produktas.category,
+            Product.id != produktas.id,
+            ).limit(3)
+        other_product_ids = [product.id for product in other_products]
+        other_photos = Photo.query.filter(Photo.product_id.in_(other_product_ids)).all()
+        return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, max_quantity=max_quantity, other_products=other_products, other_photos=other_photos)
     
     else:
-        print(request.form)
+    # print(request.form)
     # form = OrderItemForm()
     # if form.validate_on_submit():
         produktas = Product.query.get(product_id)
@@ -282,6 +306,7 @@ def produktas(product_id) -> Response:
             quantity = int(request.form.get("quantity")),
             price = produktas.price,
             oder_no = 'random generator'
+            # user
             )
         db.session.add(new_ordered_item)
         db.session.commit()
@@ -290,9 +315,28 @@ def produktas(product_id) -> Response:
 
 
 
-@app.route('/chart')
+@app.route('/chart', methods=['GET', 'POST'])
 def chart() -> Response:
-    return render_template('chart.html')
+    if request.method == 'GET':
+        items_in_chart = OrderedItems.query.all()
+        #photos
+        #prices
+        #sum of prices
+        return render_template('chart.html', items_in_chart=items_in_chart)
+    else:
+        new_order = Orders(
+            order_no = 'random generator',
+            created_on = 'date',
+            total_price = 'price',
+            status = 'status',
+            # user_id 
+            )
+        db.session.add(new_order)
+        db.session.commit()
+        flash('Užsakymas rezervuotas!', 'success')
+        return redirect(url_for('delivery'))
+
+
 
 @app.route('/apie_mus')
 def apie_mus() -> Response:

@@ -71,22 +71,22 @@
 <div>
     <h2>PANAŠIOS PREKĖS</h2>
     <div class="printai">
-        {% for print in all_prints %}
+        {% for other_product in other_products %}
                     <div class="print">
                         <div class="product-image">
-                            <a href="{{ url_for('produktas', product_id=print.id) }}">
-                                {% for photo in all_photos %}
-                                    {% if photo.product_id == print.id %}                        
-                                        <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
+                            <a href="{{ url_for('produktas', product_id=other_product.id) }}">
+                                {% for other_photo in other_photos %}
+                                    {% if other_photo.product_id == other_product.id %}                        
+                                        <img src="{{ url_for('static', filename='images/'+ other_photo.name) }}">
                                     {% endif %}
                                 {% endfor %}                                 
                             </a>
                         </div>
                         <div class="product-name-price">
-                            <a href="{{ url_for('produktas', product_id=print.id) }}">
-                                <h4>{{ print.name }}</h4>  
+                            <a href="{{ url_for('produktas', product_id=other_product.id) }}">
+                                <h4>{{ other_product.name }}</h4>  
                             </a>
-                            <p>{{ print.price }} EUR</p>
+                            <p>{{ other_product.price }} EUR</p>
                         </div>
                     </div>
         {% endfor %}

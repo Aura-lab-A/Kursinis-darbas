@@ -1,15 +1,31 @@
 {% extends 'base.html' %}
 {% block title %}Index Page{% endblock %}
 {% block content %}
-    <h1>Hello, World!</h1>
 
-    <!-- Nereikalingas -->
-    <p>{{ posts }}</p>
-    {% for post in posts %}
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.date }}, {{ post.author }}</p>
-        <hr>
-        <p>{{ post.content }}</p>
-        <hr>    
-    {% endfor %}
+
+
+<form method="post">
+
+    <div class="printai">
+        {% for item in items_in_chart %}
+            <div class="print">
+
+
+                <div class="product-name-price">
+                    <a href="{{ url_for('produktas', product_id=item.product_id) }}">
+                        <h4>{{ item.product_name }}</h4>  
+                    </a>
+                    <p>{{ item.price }} EUR</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div>     
+        <button type="submit">Pateikti užsakymą</button>
+    </div>
+
+</form>
+
+
 {% endblock %}
