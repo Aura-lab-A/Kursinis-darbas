@@ -82,6 +82,20 @@ class Color(db.Model):
 
 
 # Užsakymas
+
+class Chart(db.Model):
+    __tablename__ = 'chart'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, nullable=False)
+    product_name = db.Column(db.String(120), nullable=False)
+    size = db.Column(db.String(120), nullable=False)
+    color = db.Column(db.String(120), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # user = db.relationship('User', lazy=True)
+
+
 class OrderedItems(db.Model):
     __tablename__ = 'ordered_items'
     id = db.Column(db.Integer, primary_key=True)
@@ -98,12 +112,29 @@ class OrderedItems(db.Model):
 class Orders(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
-    order_no = db.Column(db.Integer, nullable=False)
+    order_no = db.Column(db.Integer, nullable=False)    #not integer
     created_on = db.Column(db.String(120), nullable=False)     #date????
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(120), nullable=False)   #list of statuse
     # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # user = db.relationship('User', lazy=True)    
+
+class DeliveryInfo(db.Model):
+    __tablename__ = 'delivery_info2'
+    id = db.Column(db.Integer, primary_key=True)
+    order_no = db.Column(db.Integer, nullable=False)    #not integer
+    name = db.Column(db.String(120), nullable=False)
+    surname = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False)   #email format
+    street = db.Column(db.String(120), nullable=False)
+    street_number = db.Column(db.Integer, nullable=False)
+    flat_number = db.Column(db.Integer, nullable=False)  #not needed
+    city = db.Column(db.String(120), nullable=False)
+    country = db.Column(db.String(120), nullable=False)
+    postal_code = db.Column(db.String(120), nullable=False)
+    payment_method = db.Column(db.String(120), nullable=False)
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    # user = db.relationship('User', lazy=True)  
 
 
 
@@ -154,8 +185,7 @@ class LoginForm(FlaskForm):
 #     email = StringField('El. paštas', [DataRequired(), Email()])
 #     submit = SubmitField('Atnaujinti')
 
-
-class OrderItemForm(FlaskForm):
+class ChartForm(FlaskForm):
     product_id = IntegerField('Produkto ID', validators=[DataRequired()])
     product_name = StringField('Producto vardas', validators=[DataRequired()])
     size = StringField('Produkto dydis', validators=[DataRequired()])
@@ -165,13 +195,39 @@ class OrderItemForm(FlaskForm):
     # user_id
     submit = SubmitField('Į krepšelį')
 
-class Orders(FlaskForm):
-    order_no = IntegerField('Užsakymo ID', validators=[DataRequired()])
-    created_on = StringField('Data', validators=[DataRequired()])     #date????
-    total_price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
-    status = StringField('Statusas', validators=[DataRequired()])  #list of statuses
-    # user_id 
-    submit = SubmitField('Pateikti užsakymą')
+class OrderItemForm(FlaskForm):
+    product_id = IntegerField('Produkto ID', validators=[DataRequired()])
+    product_name = StringField('Producto vardas', validators=[DataRequired()])
+    size = StringField('Produkto dydis', validators=[DataRequired()])
+    color = StringField('Produkto spalva', validators=[DataRequired()])
+    quantity = IntegerField('Kiekis', validators=[DataRequired(), NumberRange(min=0)])
+    price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
+    # user_id
+    submit = SubmitField('Patvirtinti prekes')
+
+# class Orders(FlaskForm):
+#     order_no = IntegerField('Užsakymo ID', validators=[DataRequired()])
+#     created_on = StringField('Data', validators=[DataRequired()])     #date????
+#     total_price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
+#     status = StringField('Statusas', validators=[DataRequired()])  #list of statuses
+#     # user_id 
+#     submit = SubmitField('Pateikti užsakymą')
+
+
+class DeliveryInfoForm(FlaskForm):
+    name = StringField('Vardas', validators=[DataRequired()])
+    surname = StringField('Pavardė', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])    #email format
+    street = StringField('Gatvė', validators=[DataRequired()])
+    street_number = IntegerField('Namo numeris', validators=[DataRequired(), NumberRange(min=0)])
+    flat_number = IntegerField('Buto numeris', validators=[DataRequired()]) #validators
+    city = StringField('Miestas', validators=[DataRequired()])
+    country = StringField('Šalis', validators=[DataRequired()])
+    postal_code = StringField('Pašto kodas', validators=[DataRequired()])
+    payment_method = StringField('Mokėjimo metodas', validators=[DataRequired()])
+    # user_id
+    submit = SubmitField('Patikti užsakymą')
+
 
 
 @app.route('/base')
@@ -298,43 +354,91 @@ def produktas(product_id) -> Response:
     # form = OrderItemForm()
     # if form.validate_on_submit():
         produktas = Product.query.get(product_id)
-        new_ordered_item = OrderedItems(
+        item_in_chart = Chart(
             product_id = produktas.id,
             product_name = produktas.name,
             size = request.form.get("size"),
             color = request.form.get("color"),
             quantity = int(request.form.get("quantity")),
-            price = produktas.price,
-            oder_no = 'random generator'
+            price = produktas.price
             # user
             )
-        db.session.add(new_ordered_item)
+        db.session.add(item_in_chart)
         db.session.commit()
         flash('Produktas perkeltas į krepšelį!', 'success')
-        return redirect(url_for('produktas', product_id = product_id))
+        return redirect(url_for('produktas', product_id = product_id))    #peržiūrėti
 
 
 
 @app.route('/chart', methods=['GET', 'POST'])
 def chart() -> Response:
     if request.method == 'GET':
-        items_in_chart = OrderedItems.query.all()
+        items_in_chart = Chart.query.all()
         #photos
         #prices
         #sum of prices
         return render_template('chart.html', items_in_chart=items_in_chart)
     else:
+        oder_number = 'WTHI random number'
+        items_in_chart = Chart.query.all()
+        for item in items_in_chart:
+            new_ordered_item = OrderedItems(
+                product_id = item.product_id,
+                product_name = item.product_name,
+                size = item.size,
+                color = item.color,
+                quantity = int(item.quantity),
+                price = item.price,
+                oder_no = oder_number
+                # user
+                )
+            db.session.add(new_ordered_item)
+            db.session.commit()
+
         new_order = Orders(
-            order_no = 'random generator',
+            order_no = oder_number,
             created_on = 'date',
-            total_price = 'price',
+            total_price = 1000,
             status = 'status',
             # user_id 
             )
         db.session.add(new_order)
         db.session.commit()
         flash('Užsakymas rezervuotas!', 'success')
-        return redirect(url_for('delivery'))
+        return redirect(url_for('delivery', new_order=new_order, order_id=new_order.id))
+
+
+@app.route('/delivery/<int:order_id>', methods=['GET', 'POST'])
+def delivery(order_id) -> Response:
+    order = Orders.query.get(order_id)
+    form = DeliveryInfoForm()
+    if form.validate_on_submit():
+        delivery_info = DeliveryInfo(
+            order_no = '16',
+            name=form.name.data,
+            surname=form.surname.data,             
+            email=form.email.data,
+            street=form.street.data,
+            street_number=form.street_number.data,
+            flat_number=form.flat_number.data,
+            city=form.city.data,
+            country=form.country.data,
+            postal_code=form.postal_code.data,
+            payment_method=form.payment_method.data
+            #user
+            )
+        db.session.add(delivery_info)
+        db.session.commit()
+        flash('Užsakymas pateiktas sėkmingai!', 'success')
+        return redirect(url_for('oder_info', delivery_info=delivery_info, order=order, order_id=order_id))
+    return render_template('delivery.html', form=form, order_id=order_id)
+
+
+@app.route('/oder_info/<int:order_id>')
+def oder_info(order_id) -> Response:
+    order = Orders.query.get(order_id)
+    return render_template('order_info.html', order=order)
+
 
 
 
