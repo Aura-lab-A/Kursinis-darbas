@@ -9,7 +9,9 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask_bcrypt import Bcrypt
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-import random
+from datetime import datetime, timedelta
+
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -92,6 +94,7 @@ class Chart(db.Model):
     color = db.Column(db.String(120), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    added_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # user = db.relationship('User', lazy=True)
 
@@ -113,11 +116,12 @@ class Orders(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
     order_no = db.Column(db.Integer, nullable=False)    #not integer
-    created_on = db.Column(db.String(120), nullable=False)     #date????
+    created_on = db.Column(db.DateTime, default=datetime.now, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
     status = db.Column(db.String(120), nullable=False)   #list of statuse
     # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    # user = db.relationship('User', lazy=True)    
+    # user = db.relationship('User', lazy=True)
+    # payment_id?
 
 class DeliveryInfo(db.Model):
     __tablename__ = 'delivery_info2'
@@ -192,6 +196,7 @@ class ChartForm(FlaskForm):
     color = StringField('Produkto spalva', validators=[DataRequired()])
     quantity = IntegerField('Kiekis', validators=[DataRequired(), NumberRange(min=0)])
     price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
+    added_at = StringField('Produkto spalva', validators=[DataRequired()])    #datetime
     # user_id
     submit = SubmitField('Į krepšelį')
 
@@ -351,33 +356,76 @@ def produktas(product_id) -> Response:
     
     else:
     # print(request.form)
-    # form = OrderItemForm()
+    # form = Chart()
     # if form.validate_on_submit():
         produktas = Product.query.get(product_id)
+        # product_exists = Chart.query.filter_by(Chart.product_id==product_id).first()
+        # if product_exists:
+        #     try:
+        #         product_exists.quantity = product_exists.quantity+int(request.form.get("quantity"))
+        #         db.session.commit()
+        #         flash(f'{product_exists.product_name} kiekis buvo atnaujintas.')
+        #     except Exception as e:
+        #         flash(f'{product_exists.product_name} kiekis nebuvo atnaujintas.')
         item_in_chart = Chart(
             product_id = produktas.id,
             product_name = produktas.name,
             size = request.form.get("size"),
             color = request.form.get("color"),
             quantity = int(request.form.get("quantity")),
-            price = produktas.price
+            price = produktas.price,
+            added_at = datetime.now()
             # user
             )
+        produktas.quantity -= item_in_chart.quantity     #here or when placing order?
         db.session.add(item_in_chart)
         db.session.commit()
         flash('Produktas perkeltas į krepšelį!', 'success')
         return redirect(url_for('produktas', product_id = product_id))    #peržiūrėti
 
 
+# def updated_chart():
+#     now = datetime.now()
+#     time_span = timedelta(minutes=30)
+#     old_items = Chart.query.filter(now > Chart.added_at+time_span).all()
+#     for old_item in old_items:
+#         db.session.delete(old_item)
+#     db.session.commit()
+#     items_in_chart = Chart.query.all()
+#     return items_in_chart
+
+
+# products = {product.id: product for product in Product.query.all()}
+# for old_item in old_items:
+#     if old_item.product_id in products:
+#         products[old_item.product_id].quantity += old_item.quantity
+
+@app.route('/delete/<int:id>')
+def delete_cart_item(id):
+    item_in_chart = Chart.query.get(id)      #updated_chart()
+    db.session.delete(item_in_chart)
+    db.session.commit()
+    return redirect(url_for('chart'))
+
+@app.route('/delete')
+def delete_cart_items():
+    items_in_chart = Chart.query.all()      #updated_chart()
+    for item_in_chart in items_in_chart:
+        db.session.delete(item_in_chart)
+    db.session.commit()
+    return redirect(url_for('chart'))
+
 
 @app.route('/chart', methods=['GET', 'POST'])
 def chart() -> Response:
     if request.method == 'GET':
-        items_in_chart = Chart.query.all()
-        #photos
-        #prices
-        #sum of prices
-        return render_template('chart.html', items_in_chart=items_in_chart)
+        items_in_chart = Chart.query.all()      #updated_chart()
+        items_in_chart_ids = [item.product_id for item in items_in_chart]
+        items_in_chart_photos = Photo.query.filter(Photo.product_id.in_(items_in_chart_ids)).all()
+        total_price = 0
+        for item in items_in_chart:
+            total_price += item.price * item.quantity
+        return render_template('chart.html', items_in_chart=items_in_chart, total_price=total_price, items_in_chart_photos=items_in_chart_photos)
     else:
         oder_number = 'WTHI random number'
         items_in_chart = Chart.query.all()
@@ -393,12 +441,12 @@ def chart() -> Response:
                 # user
                 )
             db.session.add(new_ordered_item)
-            db.session.commit()
+            db.session.commit()    #not needed
 
         new_order = Orders(
             order_no = oder_number,
-            created_on = 'date',
-            total_price = 1000,
+            created_on = datetime.now(),
+            total_price = total_price,
             status = 'status',
             # user_id 
             )
@@ -414,7 +462,7 @@ def delivery(order_id) -> Response:
     form = DeliveryInfoForm()
     if form.validate_on_submit():
         delivery_info = DeliveryInfo(
-            order_no = '16',
+            order_no = order.order_no,
             name=form.name.data,
             surname=form.surname.data,             
             email=form.email.data,
@@ -428,6 +476,11 @@ def delivery(order_id) -> Response:
             #user
             )
         db.session.add(delivery_info)
+
+        chart_items = Chart.query.all()
+        for chart_item in chart_items:
+            db.session.delete(chart_item)
+
         db.session.commit()
         flash('Užsakymas pateiktas sėkmingai!', 'success')
         return redirect(url_for('oder_info', delivery_info=delivery_info, order=order, order_id=order_id))

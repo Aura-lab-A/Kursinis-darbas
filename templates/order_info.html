@@ -3,9 +3,10 @@
 {% block content %}
 
 {{ order.id }}
-<h2>{{ order.order_no }}</h2>
-{{ order.status }}
-<p>{{ order.total_price }}</p>
+<h2>Ačiū! Jūsų užsakymas pateiktas sėkmingai!</h2>
+<p>Užsakymo numeris: {{ order.order_no }}</p>
+<p>Užsakymo statusas: {{ order.status }}</p>
+<p>Užsakymo kaina: {{ order.total_price }}</p>
 
  
 {% endblock %}

@@ -24,13 +24,13 @@
                 <div>
                     {% if current_user.is_authenticated %}
                     <div id="person">
-                        <form action="/account"> <!-- reikia normalaus action -->
+                        <form action="/account"> 
                             <button type="submit" class="person"></button>
                         </form>    
                     </div>
                     {% else %}  
                     <div id="person">
-                        <form action="/login"> <!-- reikia normalaus action -->
+                        <form action="/login">
                             <button type="submit" class="person"></button>
                         </form>    
                     </div>

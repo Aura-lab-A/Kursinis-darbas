@@ -1,31 +1,57 @@
 {% extends 'base.html' %}
-{% block title %}Index Page{% endblock %}
+{% block title %}Cart{% endblock %}
 {% block content %}
 
+{% if items_in_chart %}
 
+    <form method="post">
 
-<form method="post">
+        <div class="printai">
+            {% for item in items_in_chart %}
+                <div class="print">
 
-    <div class="printai">
-        {% for item in items_in_chart %}
-            <div class="print">
+                    <div class="product-image">
+                        <a href="{{ url_for('produktas', product_id=item.product_id) }}">
+                            {% for photo in items_in_chart_photos %}
+                                {% if photo.product_id == item.product_id %}                        
+                                    <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
+                                {% endif %}
+                            {% endfor %}                                 
+                        </a>
+                    </div>
 
-
-                <div class="product-name-price">
-                    <a href="{{ url_for('produktas', product_id=item.product_id) }}">
-                        <h4>{{ item.product_name }}</h4>  
-                    </a>
-                    <p>{{ item.price }} EUR</p>
+                    <div class="product-name-price">
+                        <a href="{{ url_for('produktas', product_id=item.product_id) }}">
+                            <h4>{{ item.product_name }}</h4>  
+                        </a>
+                        <p>{{ item.size }}</p>
+                        <p>{{ item.color }}</p>
+                        <p>{{ item.quantity }}</p>
+                        <p>{{ item.price }} EUR</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('delete_cart_item', id=item.id) }}">Pašalinti</a>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
+            <p>Benrda suma: {{ total_price }} EUR</p>
+        <div>     
+            <button type="submit">Patvirtinti prekes</button>
+        </div>
+
+    </form>
+
+    <div>
+        <a href="{{ url_for('delete_cart_items') }}">Išvalyti krepšelį</a>
     </div>
 
-    <div>     
-        <button type="submit">Pateikti užsakymą</button>
+{% else %}
+
     </div>
+        <p>Krepšelyje prekių nėra.</p>
+    <div> 
 
-</form>
-
+{% endif %}
 
 {% endblock %}
