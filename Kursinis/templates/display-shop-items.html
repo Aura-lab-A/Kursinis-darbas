@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Add shop items{% endblock %}
+{% block content %}
+    
+
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Produkto pavadinimas</th>
+            <th scope="col">Produkto aprašymas</th>
+            <th scope="col">Vieneto kaina</th>
+            <th scope="col">Kiekis</th>
+            <th scope="col">Kategorija</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <form action="" method="POST" enctype="multipart/form-data">
+
+                {{ form.hidden_tag() }}
+                <td>{{ form.product_name }}</td>
+                <td>{{ form.description }}</td>
+                <td>{{ form.price }}</td>
+                <td>{{ form.quantity }}</td>
+                <td>{{ form.category }}</td>
+                <td>{{ form.add_product() }}</td>
+
+            </form>
+        </tr>
+    </tbody>
+
+
+
+</table>
+
+
+
+
+
+
+
+
+{% endblock %}

@@ -90,9 +90,9 @@ header {
     transform: scale(1.2);
 }
 
-#chart button {
+#cart button {
     float: right;
-    background: url('images/chart.png') no-repeat center center;
+    background: url('images/cart.png') no-repeat center center;
     background-size: cover;
     width: 32px;
     height: 32px;
@@ -101,7 +101,7 @@ header {
     padding: 10px;
 }
 
-#chart button:hover {
+#cart button:hover {
     transform: scale(1.2);
 }
 

@@ -23,7 +23,7 @@
     </ul> -->
 
     <div class="printai">
-        {% for print in all_prints %}
+        {% for print in all_prints.items %}
             <div class="print">
                 <div class="product-image">
                     <a href="{{ url_for('produktas', product_id=print.id) }}">

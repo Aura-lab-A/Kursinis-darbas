@@ -48,6 +48,20 @@
             {% endif %}
         </div>
         <dv>
+            {{ form.phone_no.label }}
+
+            {% if form.phone_no.errors %}
+                {{ form.phone_no }}
+                <div class='invalid-feedback'>
+                    {% for error in form.phone_no.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.phone_no }}
+            {% endif %}
+        </div>
+        <dv>
             {{ form.street.label }}
 
             {% if form.street.errors %}
