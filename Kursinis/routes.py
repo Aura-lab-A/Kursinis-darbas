@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, Response, redirect, url_for, session, flash
+from flask import Flask, render_template, request, Response, redirect, url_for, session, flash, make_response
 import os
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
+from sqlalchemy import func
+import requests
+import uuid
 # import secrets
 # from PIL import Image
 # from flask_mail import Message
@@ -15,6 +18,23 @@ from Kursinis.models import User, Product, Photo, Size, Color, Cart, OrderedItem
 def base() -> Response:
     return render_template('base.html')
 
+@app.before_request
+def set_visitor_cookie():
+    db.create_all()
+    cookie_id = request.cookies.get('visitor_cookie')
+    if not cookie_id:
+        # Generate a unique cookie ID
+        cookie_id = str(uuid.uuid4())
+        # Save the cookie in the database
+        visitor_cookie = User(cookie_id=cookie_id)
+        db.session.add(visitor_cookie)
+        db.session.commit()
+        # Set the cookie in the response
+        response = make_response(redirect(request.path))
+        response.set_cookie('visitor_cookie', cookie_id, max_age=30*24*60*60)  # Cookie expires in 30 days
+        return response
+    session['visitor_cookie_id'] = cookie_id
+
 @app.route('/home')
 def home() -> Response:    #useriu cookies
     return render_template('home.html')
@@ -23,30 +43,37 @@ def home() -> Response:    #useriu cookies
 def register():
     db.create_all()
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('account'))
+    cookie_id = session.get('visitor_cookie_id')
+    if not cookie_id:
+        set_visitor_cookie()
+    user = User.query.filter_by(cookie_id = cookie_id).first()
     form = forms.RegisterForm()
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
-        user = User(name=form.name.data, email=form.email.data,
-                    password=hashed_password)
-        db.session.add(user)
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.name = form.name.data
+        user.email=form.email.data
+        user.password=hashed_password
+        user.date_register=datetime.now()
+        # user = User(name=form.name.data, email=form.email.data, password=hashed_password)
+        # db.session.add(user)
         db.session.commit()
         flash('Registracija sėkminga! Galite prisijungti.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('account'))
     form = forms.LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)          
+            login_user(user, remember=form.remember.data)         #galim cookies isira6yti - kas geriau? 
             next_page = request.args.get('next')  #kas cia?
-            return redirect(next_page) if next_page else redirect(url_for('login'))
+            return redirect(next_page) if next_page else redirect(url_for('account'))
         else:
             flash('El. paštas arba slaptažodis nėra teisingi.', 'danger')
     return render_template('login.html', form=form)
@@ -136,18 +163,54 @@ def logout():
 #     return render_template('results.html', query=query, results=results)
 
 
+
+# @app.route('/setcookie') 
+# def setcookie(): 
+#     resp = make_response('Setting the cookie')  
+#     resp.set_cookie('User','11111111111') 
+#     return resp 
+
+# @app.route('/getcookie') 
+# def getcookie(): 
+#     User = request.cookies.get('User') 
+#     return 'User is a '+ User 
+
+@app.route('/') 
+def vistors_count(): 
+    # Converting str to int 
+    count = int(request.cookies.get('visitors count', 0)) 
+    # Getting the key-visitors count value as 0 
+    count = count+1
+    output = 'You visited this page for '+str(count) + ' times'
+    resp = make_response(output) 
+    resp.set_cookie('visitors count', str(count)) 
+    return resp 
+  
+  
+@app.route('/get') 
+def get_vistors_count(): 
+    count = request.cookies.get('visitors count') 
+    return count 
+
+
+
 @app.route('/printai')
 def printai() -> Response:
-    db.create_all()
     page = request.args.get('page', 1, type=int)
     all_prints = Product.query.filter_by(category ='print').paginate(page=page, per_page=6)
     print_ids = [print_item.id for print_item in all_prints.items]
-    all_photos = Photo.query.filter(Photo.product_id.in_(print_ids)).all()
+    subquery = db.session.query(
+        Photo.product_id,
+        func.min(Photo.id).label('min_id')
+        ).filter(Photo.product_id.in_(print_ids)).group_by(Photo.product_id).subquery()
+    all_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
 
-    print("Products found:", [product.name for product in all_prints.items])
-    print("Photos found:", [photo.name for photo in all_photos])
+    # print("Products found:", [product.name for product in all_prints.items])
+    # print("Photos found:", [photo.name for photo in all_photos])
 
     return render_template('printai.html', all_prints=all_prints, all_photos=all_photos)
+
+
 
 @app.route('/zvakes')
 def zvakes() -> Response:
@@ -159,60 +222,72 @@ def kazkas() -> Response:
 
 @app.route('/produktas/<int:product_id>', methods=['GET', 'POST'])
 def produktas(product_id) -> Response:
+    db.create_all()
+
     if request.method == 'GET':
-        db.create_all()
         produktas = Product.query.get(product_id)
-        max_quantity = produktas.quantity
-        sizes = produktas.sizes
-        colors = produktas.colors
-        photos = produktas.photos
-        other_products = Product.query.filter(
-            Product.category == produktas.category,
-            Product.id != produktas.id,
-            ).limit(3)
-        other_product_ids = [product.id for product in other_products]
-        other_photos = Photo.query.filter(Photo.product_id.in_(other_product_ids)).all()
-        return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, max_quantity=max_quantity, other_products=other_products, other_photos=other_photos)
+        if not produktas:
+            return "Toks produktas nerastas"
+        else:
+            max_quantity = produktas.quantity
+            sizes = produktas.sizes
+            colors = produktas.colors
+            photos = produktas.photos
+            other_products = Product.query.filter(
+                Product.category == produktas.category,
+                Product.id != produktas.id,
+                ).limit(3)
+            other_product_ids = [product.id for product in other_products]
+            subquery = db.session.query(
+                Photo.product_id,
+                func.min(Photo.id).label('min_id')
+                ).filter(Photo.product_id.in_(other_product_ids)).group_by(Photo.product_id).subquery()
+            other_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
+            return render_template('produktas.html', produktas=produktas, sizes=sizes, colors=colors, photos=photos, max_quantity=max_quantity, other_products=other_products, other_photos=other_photos)
     
     else:
-    # print(request.form)
+        cookie_id = session.get('visitor_cookie_id')
+        if not cookie_id:
+            set_visitor_cookie()
+            return redirect(url_for('produktas', product_id=product_id))
     # form = Cart()
     # if form.validate_on_submit():
-        db.create_all()
+        # db.create_all()
+        user = User.query.filter_by(cookie_id = cookie_id).first()
+        # if user is None:
+        #     flash('User not found.', 'error')
+        #     return redirect(url_for('produktas', product_id=product_id))
         produktas = Product.query.get(product_id)
-        # product_exists = Cart.query.filter_by(Cart.product_id==product_id).first()
-        # if product_exists:
-        #     try:
-        #         product_exists.quantity = product_exists.quantity+int(request.form.get("quantity"))
-        #         db.session.commit()
-        #         flash(f'{product_exists.product_name} kiekis buvo atnaujintas.')
-        #     except Exception as e:
-        #         flash(f'{product_exists.product_name} kiekis nebuvo atnaujintas.')
-        item_in_cart = Cart(
-            product_id = produktas.id,
-            product_name = produktas.name,
-            size = request.form.get("size"),
-            color = request.form.get("color"),
-            quantity = int(request.form.get("quantity")),
-            price = produktas.price,
-            added_at = datetime.now()
-            # user
-            )
-        produktas.quantity -= item_in_cart.quantity     #here or when placing order?
-        db.session.add(item_in_cart)
-        db.session.commit()
-        flash('Produktas perkeltas į krepšelį!', 'success')
-        return redirect(url_for('produktas', product_id = product_id))    #peržiūrėti
+        if not produktas:
+            return "Toks produktas nerastas"
+        else:        
+            item_in_cart = Cart(                       #prid5ti kain1 su sale
+                product_id = produktas.id,
+                product_name = produktas.name,
+                size = request.form.get("size"),
+                color = request.form.get("color"),
+                quantity = int(request.form.get("quantity")),
+                price = produktas.price,
+                added_at = datetime.now(),
+                user_id = user.id
+                )
+            db.session.add(item_in_cart)
+            db.session.commit()
+            flash('Produktas perkeltas į krepšelį!', 'success')
+            return redirect(url_for('produktas', product_id = product_id))    #peržiūrėti
 
 
 def updated_cart():
+    cookie_id = session.get('visitor_cookie_id')
+    if not cookie_id:
+        set_visitor_cookie()
     now = datetime.now()
-    time_span = timedelta(minutes=10)
+    time_span = timedelta(minutes=5)
     old_items = Cart.query.filter(Cart.added_at < now - time_span).all()
     for old_item in old_items:
         db.session.delete(old_item)
     db.session.commit()
-    items_in_cart = Cart.query.all()
+    items_in_cart = Cart.query.join(User).filter(User.cookie_id == cookie_id).all()
     return items_in_cart
 
 
@@ -223,14 +298,14 @@ def updated_cart():
 
 @app.route('/delete/<int:id>')
 def delete_cart_item(id):
-    item_in_cart = Cart.query.get(id)      #updated_cart()
+    item_in_cart = updated_cart()
     db.session.delete(item_in_cart)
     db.session.commit()
     return redirect(url_for('cart'))
 
 @app.route('/delete')
 def delete_cart_items():
-    items_in_cart = Cart.query.all()      #updated_cart()
+    items_in_cart = updated_cart()
     for item_in_cart in items_in_cart:
         db.session.delete(item_in_cart)
     db.session.commit()
@@ -240,81 +315,125 @@ def delete_cart_items():
 @app.route('/cart', methods=['GET', 'POST'])    #gali b8ti total price per product in cart
 def cart() -> Response:
     if request.method == 'GET':
-        items_in_cart = updated_cart()      #updated_cart()
-        items_in_cart_ids = [item.product_id for item in items_in_cart]
-        items_in_cart_photos = Photo.query.filter(Photo.product_id.in_(items_in_cart_ids)).all()
-        total_price = 0
-        for item in items_in_cart:
-            total_price += item.price * item.quantity
-        return render_template('cart.html', items_in_cart=items_in_cart, total_price=total_price, items_in_cart_photos=items_in_cart_photos)
+        items_in_cart = updated_cart()
+        if not items_in_cart:
+            return "Krepšelyje prekių nėra."
+        else:
+            items_in_cart_ids = [item.product_id for item in items_in_cart]
+            subquery = db.session.query(
+                Photo.product_id,
+                func.min(Photo.id).label('min_id')
+                ).filter(Photo.product_id.in_(items_in_cart_ids)).group_by(Photo.product_id).subquery()
+            items_in_cart_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
+            total_price = sum(item.price * item.quantity for item in items_in_cart)
+            # for item in items_in_cart:
+            #     total_price += item.price * item.quantity
+            return render_template('cart.html', items_in_cart=items_in_cart, total_price=total_price, items_in_cart_photos=items_in_cart_photos)
     else:
-        oder_number = 'WTHI random number'
-        items_in_cart = Cart.query.all()
-        for item in items_in_cart:
-            new_ordered_item = OrderedItems(
-                product_id = item.product_id,
-                product_name = item.product_name,
-                size = item.size,
-                color = item.color,
-                quantity = int(item.quantity),
-                price = item.price,
-                oder_no = oder_number
-                # user
+        #ar cia tikrai viskas gerai?
+        return redirect(url_for('oder'))
+    
+
+@app.route('/order', methods=['GET', 'POST'])    #gali b8ti total price per product in cart
+def order() -> Response:
+    if request.method == 'GET':
+        items_in_cart = updated_cart()      #updated_cart()
+        if not items_in_cart:
+            return "Krepšelyje prekių nėra."
+        else:
+            items_in_cart_ids = [item.product_id for item in items_in_cart]
+            subquery = db.session.query(
+                Photo.product_id,
+                func.min(Photo.id).label('min_id')
+                ).filter(Photo.product_id.in_(items_in_cart_ids)).group_by(Photo.product_id).subquery()
+            items_in_cart_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
+            total_price = sum(item.price * item.quantity for item in items_in_cart)
+            # for item in items_in_cart:
+            #     total_price += item.price * item.quantity
+            form = forms.DeliveryInfoForm()
+            return render_template('order.html', items_in_cart=items_in_cart, total_price=total_price, items_in_cart_photos=items_in_cart_photos, form=form)
+    else:
+        cookie_id = session.get('visitor_cookie_id')
+        if not cookie_id:
+            return set_visitor_cookie()
+
+        user = User.query.filter_by(cookie_id = cookie_id).first()
+        # if user is None:
+        #     flash('User not found.', 'error')
+        #     return redirect(url_for('produktas', product_id=product_id))
+        items_in_cart = updated_cart()
+        if not items_in_cart:
+            return "Krepšelyje prekių nėra."
+        else:
+
+            oder_number = 'E-SHOP-' + str(uuid.uuid4())
+            total_price = sum(item.price * item.quantity for item in items_in_cart)
+
+            new_order = Orders(
+                order_no = oder_number,
+                created_on = datetime.now(),
+                total_price = total_price,
+                status = 'Pateiktas',
+                user_id = user.id 
                 )
-            db.session.add(new_ordered_item)
-            # db.session.commit()    #not needed
-        
-        total_price = 0
-        for item in items_in_cart:
-            total_price += item.price * item.quantity
-        new_order = Orders(
-            order_no = oder_number,
-            created_on = datetime.now(),
-            total_price = total_price,
-            status = 'status',
-            # user_id 
-            )
-        db.session.add(new_order)
-        db.session.commit()
-        flash('Užsakymas rezervuotas!', 'success')
-        return redirect(url_for('delivery', new_ordered_item=new_ordered_item, new_order=new_order, order_id=new_order.id))
+            db.session.add(new_order)
+
+            items_in_cart = updated_cart()    #updated_cart()
+            for item in items_in_cart:
+                new_ordered_item = OrderedItems(
+                    product_id = item.product_id,
+                    product_name = item.product_name,
+                    size = item.size,
+                    color = item.color,
+                    quantity = int(item.quantity),
+                    price = item.price,
+                    oder_no = oder_number,
+                    order_id = new_order.id
+                    )
+                db.session.add(new_ordered_item)
+                    
+                # produktas.quantity -= item_in_cart.quantity
+            form = forms.DeliveryInfoForm()
+            if form.validate_on_submit():                 #kazkas neveikia
+                delivery_info = DeliveryInfo(
+                    name=form.name.data,
+                    surname=form.surname.data,             
+                    email=form.email.data,
+                    phone_no = form.phone_no.data,
+                    street=form.street.data,
+                    street_number=form.street_number.data,
+                    flat_number=form.flat_number.data,
+                    city=form.city.data,
+                    country=form.country.data,
+                    postal_code=form.postal_code.data,
+                    order_no = oder_number,
+                    order_id = new_order.id,
+                    user_id = user.id
+                    )
+                db.session.add(delivery_info)
+            # items_in_cart = updated_cart()     #updated_cart()
+            for ordered_item in items_in_cart:
+                db.session.delete(ordered_item)
+            
+            db.session.commit()
+
+            flash('Užsakymas pateiktas sėkmingai!', 'success')
+            return redirect(url_for('order_info', order_id=new_order.id))
 
 
-@app.route('/delivery/<int:order_id>', methods=['GET', 'POST'])
-def delivery(order_id) -> Response:
-    order = Orders.query.get(order_id)
-    form = forms.DeliveryInfoForm()
-    if form.validate_on_submit():
-        delivery_info = DeliveryInfo(
-            order_no = order.order_no,
-            name=form.name.data,
-            surname=form.surname.data,             
-            email=form.email.data,
-            phone_no = form.phone_no.data,
-            street=form.street.data,
-            street_number=form.street_number.data,
-            flat_number=form.flat_number.data,
-            city=form.city.data,
-            country=form.country.data,
-            postal_code=form.postal_code.data,
-            payment_method=form.payment_method.data
-            #user
-            )
-        db.session.add(delivery_info)
+#new_ordered_item=new_ordered_item, , delivery_info=delivery_info, order_id=new_order.id, form=form,
 
-        cart_items = Cart.query.all()
-        for cart_item in cart_items:
-            db.session.delete(cart_item)
-
-        db.session.commit()
-        flash('Užsakymas pateiktas sėkmingai!', 'success')
-        return redirect(url_for('oder_info', delivery_info=delivery_info, order=order, order_id=order_id))
-    return render_template('delivery.html', form=form, order_id=order_id)
-
-
-@app.route('/oder_info/<int:order_id>')
-def oder_info(order_id) -> Response:
-    order = Orders.query.get(order_id)
+@app.route('/order_info/<int:order_id>')
+def order_info(order_id) -> Response:
+    cookie_id = session.get('visitor_cookie_id')
+    if not cookie_id:
+        return set_visitor_cookie()
+    user = User.query.filter_by(cookie_id = cookie_id).first()
+    order = Orders.query.filter(
+        Orders.id == order_id,
+        Orders.user_id == user.id).first()
+    if not order:
+        return "Toks užsakymas nerastas."
     return render_template('order_info.html', order=order)
 
 # Naujas užsakymas:
@@ -336,12 +455,7 @@ def oder_info(order_id) -> Response:
 #         return redirect(url_for('entries'))
 #     return render_template('new_entry.html', form=form)
 
-# Užsakymai:
-# @app.route('/entries')
-# @login_required
-# def entries():
-#     my_entries = Entry.query.filter_by(user_id=current_user.id).all()
-#     return render_template('entries.html', all_entries=my_entries, datetime=datetime)
+
 
 
 
@@ -366,11 +480,12 @@ def add_shop_items():
         form = forms.ShopItemsForm()
         if form.validate_on_submit():
             add_product = Product(
-                name = form.producy_name.data,
+                name = form.product_name.data,
                 description = form.description.data,
                 price = form.price.data,
                 quantity = form.quantity.data,
                 category = form.category.data
+                #picture
             )
             db.session.add(add_product)
             db.session.commit()
@@ -389,16 +504,45 @@ def display_shop_items():
     return render_template('404.html')   # ar čia geras return?
 
 
-# @app.route("/update/<int:id>", methods=['GET', 'POST'])
-# def update(id):
-#     forma = forms.IrasasForm()
-#     irasas = Irasas.query.get(id)
-#     if forma.validate_on_submit():
-#         irasas.pajamos = forma.pajamos.data
-#         irasas.suma = forma.suma.data
-#         db.session.commit()
-#         return redirect(url_for('records'))
-#     return render_template("update.html", form=forma, irasas=irasas)
+@app.route("/update-shop-item/<int:product_id>", methods=['GET', 'POST'])
+@login_required
+def update_shop_item(product_id):
+    if current_user.id == 1:
+        form = forms.ShopItemsForm()
+        product_to_update = Product.query.get(product_id)
+
+        form.product_name.render_kw = {'placeholder': product_to_update.product_name}
+        form.description.render_kw = {'placeholder': product_to_update.description}
+        form.price.render_kw = {'placeholder': product_to_update.price}
+        form.quantity.render_kw = {'placeholder': product_to_update.quantity}
+        form.category.render_kw = {'placeholder': product_to_update.category}
+
+        if form.validate_on_submit():    #galima daryti per try .update...
+            product_to_update.name = form.product_name.data,
+            product_to_update.description = form.description.data,
+            product_to_update.price = form.price.data,
+            product_to_update.quantity = form.quantity.data,
+            product_to_update.category = form.category.data
+            #picture
+            db.session.commit()
+            flash('Produktas atnaujintas sėkmingai!', 'success')
+            return redirect('display-shop-items.html', form=form)
+        return render_template('update-shop-item.html', form=form)
+    return render_template('404.html')   # ar čia geras return?
+
+
+@app.route("/delete-shop-item/<int:product_id>", methods=['GET', 'POST'])
+@login_required
+def delete_shop_item(product_id):
+    if current_user.id == 1:
+        product_to_delete = Product.query.get(product_id)
+        db.session.delete(product_to_delete)
+        db.session.commit()
+        flash('Produktas ištrintas sėkmingai!', 'success')    #exemption could be included
+        return redirect('display-shop-items.html')
+    return render_template('404.html')   # ar čia geras return?
+
+
 
 # def save_picture(form_picture):
 #     random_hex = secrets.token_hex(8)
@@ -414,6 +558,14 @@ def display_shop_items():
 #     return picture_fn
 
 
+
+#UPDATE ORDER status
+# Užsakymai:
+# @app.route('/entries')
+# @login_required
+# def entries():
+#     my_entries = Entry.query.filter_by(user_id=current_user.id).all()
+#     return render_template('entries.html', all_entries=my_entries, datetime=datetime)
 
 @app.errorhandler(404)
 def error_404(error):

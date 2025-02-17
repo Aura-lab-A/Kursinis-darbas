@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% block title %}Cart{% endblock %}
+{% block content %}
+
+{% if items_in_cart %}
+
+<h1>Prekės</h1>
+
+    <form method="POST">
+
+        <div class="printai">
+            {% for item in items_in_cart %}
+                <div class="print">
+
+                    <div class="product-image">
+                        <a href="{{ url_for('produktas', product_id=item.product_id) }}">
+                            {% for photo in items_in_cart_photos %}
+                                {% if photo.product_id == item.product_id %}                        
+                                    <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
+                                {% endif %}
+                            {% endfor %}                                 
+                        </a>
+                    </div>
+
+                    <div class="product-name-price">
+                        <a href="{{ url_for('produktas', product_id=item.product_id) }}">
+                            <h4>{{ item.product_name }}</h4>  
+                        </a>
+                        <p>{{ item.size }}</p>
+                        <p>{{ item.color }}</p>
+                        <p>{{ item.quantity }}</p>
+                        <p>{{ item.price }} EUR</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+            <p>Benrda suma: {{ total_price }} EUR</p>
+
+    </form>
+
+
+    <h1>Pristatymo informacija</h1>
+
+        <form method='POST'>
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.name.label }}
+
+                {% if form.name.errors %}
+                    {{ form.name }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.name }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.surname.label }}
+
+                {% if form.surname.errors %}
+                    {{ form.surname }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.surname.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.surname }}
+                {% endif %}
+            </div>
+            <div>
+                {{ form.email.label }}
+                {% if form.email.errors %}
+                    {{ form.email }}
+                    <div>
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.phone_no.label }}
+
+                {% if form.phone_no.errors %}
+                    {{ form.phone_no }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.phone_no.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.phone_no }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.street.label }}
+
+                {% if form.street.errors %}
+                    {{ form.street }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.street.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.street }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.street_number.label }}
+
+                {% if form.street_number.errors %}
+                    {{ form.street_number }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.street_number.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.street_number }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.flat_number.label }}
+
+                {% if form.flat_number.errors %}
+                    {{ form.flat_number }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.flat_number.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.flat_number }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.city.label }}
+
+                {% if form.city.errors %}
+                    {{ form.city }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.city.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.city }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.country.label }}
+
+                {% if form.country.errors %}
+                    {{ form.country }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.country.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.country }}
+                {% endif %}
+            </div>
+            <dv>
+                {{ form.postal_code.label }}
+
+                {% if form.postal_code.errors %}
+                    {{ form.postal_code }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.postal_code.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.postal_code }}
+                {% endif %}
+            </div>
+
+            <div>
+                <h1>Mokėjimo informacija</h1>
+                <p>Pervedimas į banko sąskaitą:</p>
+            </div>
+
+            <div>
+                {{ form.submit }}
+            </div>
+        </form>
+
+{% else %}
+
+    </div>
+        <p>Krepšelyje prekių nėra.</p>
+    <div> 
+
+{% endif %}
+
+
+
+{% endblock %}

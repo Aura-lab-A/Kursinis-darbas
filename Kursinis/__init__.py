@@ -43,14 +43,16 @@ def load_user(user_id):
     db.create_all()
     return User.query.get(int(user_id))
 
-class ManoModelView(ModelView):
+class AdminModelView(ModelView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.email == "admin@gmail.com"
+        return current_user.is_authenticated and current_user.name == "admin"
 
 from Kursinis import routes
 admin = Admin(app)
-admin.add_view(ManoModelView(User, db.session))
-admin.add_view(ModelView(Product, db.session))
+admin.add_view(AdminModelView(User, db.session))
+admin.add_view(AdminModelView(Product, db.session))
+admin.add_view(AdminModelView(Photo, db.session))
+admin.add_view(AdminModelView(Color, db.session))
 
 # app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 # app.config['MAIL_PORT'] = 587

@@ -39,7 +39,12 @@
                         </select>
                 </div>
                 <div>
-                    <p>Vieneto kaina: {{ produktas.price }} EUR</p>
+                    {% if produktas.sale == True %}
+                        <p>Vieneto kaina: {{ produktas.sale_price }} EUR</p>
+                        <p class="strikethrough">{{ produktas.price }} EUR</p>
+                    {% else %}
+                        <p>Vieneto kaina: {{ produktas.price }} EUR</p>
+                    {% endif %}
                 </div>
                 <div>
                 

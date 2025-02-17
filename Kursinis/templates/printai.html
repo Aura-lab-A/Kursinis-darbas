@@ -38,7 +38,12 @@
                     <a href="{{ url_for('produktas', product_id=print.id) }}">
                         <h4>{{ print.name }}</h4>  
                     </a>
-                    <p>{{ print.price }} EUR</p>
+                    {% if print.sale == 1 %}
+                        <p>{{ print.sale_price }} EUR</p>
+                        <p class="strikethrough">{{ print.price }} EUR</p>
+                    {% else %}
+                        <p>{{ print.price }} EUR</p>
+                    {% endif %}
                 </div>
             </div>
         {% endfor %}
