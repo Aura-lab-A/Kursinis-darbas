@@ -14,28 +14,22 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True)     #nullable=False, default='-'
     password = db.Column(db.String(120)) #nullable=False, default='-'
     date_register = db.Column(db.String(120))   #nullable=False
-    cookie_id = db.Column(db.String(36), unique=True, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
     account = db.relationship('Account', back_populates='user', uselist=False)    #uselist=False
     cart = db.relationship('Cart', back_populates='user', uselist=False)   #uselist=False???
     orders = db.relationship('Orders', back_populates='user')
     delivery_info = db.relationship('DeliveryInfo', back_populates='user')
 
-# class UserSecond(db.Model):
-#     __tablename__ = 'users_second'
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(120), unique=True)   #nullable=False, default='-'
-#     email = db.Column(db.String(120), unique=True)     #nullable=False, default='-'
-#     password = db.Column(db.String(120)) #nullable=False, default='-'
-#     date_register = db.Column(db.String(120))   #nullable=False
-#     cookie_id = db.Column(db.String(36), unique=True, nullable=False)
-#     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    # account = db.relationship('Account', back_populates='user', uselist=False)    #uselist=False
-    # cart = db.relationship('Cart', back_populates='user', uselist=False)   #uselist=False???
-    # orders = db.relationship('Orders', back_populates='user')
-    # delivery_info = db.relationship('DeliveryInfo', back_populates='user')
 
+class Visitor(db.Model):
+    __tablename__ = 'visitors'
+    id = db.Column(db.Integer, primary_key=True)
+    cookie_id = db.Column(db.String(36), unique=True, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
+    cart = db.relationship('Cart', back_populates='visitor', uselist=False)   #uselist=False???
+    orders = db.relationship('Orders', back_populates='visitor')
+    delivery_info = db.relationship('DeliveryInfo', back_populates='visitor')
 
+#Šito gal nereikia:
 class Account(db.Model):
     __tablename__ = 'accounts'
     id = db.Column(db.Integer, primary_key=True)
@@ -91,8 +85,8 @@ class Product(db.Model):
     photos = db.relationship('Photo', back_populates='product')
     sizes = db.relationship('Size', secondary=product_size_association, back_populates='products')
     colors = db.relationship('Color', secondary=product_color_association, back_populates='products')
-    # cart = db.relationship('Cart', back_populates='product')
-    # ordered_items = db.relationship('OrderedItems', back_populates='product')
+    cart = db.relationship('Cart', back_populates='product')
+    ordered_items = db.relationship('OrderedItems', back_populates='product')
 
 
 class Photo(db.Model):
@@ -122,17 +116,21 @@ class Color(db.Model):
 class Cart(db.Model):
     __tablename__ = 'cart'
     id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, nullable=False)
-    # product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
-    # product = db.relationship('Product', back_populates='cart')
+    # product_id = db.Column(db.Integer, nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product = db.relationship('Product', back_populates='cart')
     product_name = db.Column(db.String(120), nullable=False)
     size = db.Column(db.String(50), nullable=False)
     color = db.Column(db.String(50), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    sale_price = db.Column(db.Float, nullable=False)
+    sale = db.Column(db.Boolean, default=False)
     added_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', back_populates='cart')    #lazy=True insted of back_populates
+    visitor_id = db.Column(db.Integer, db.ForeignKey('visitors.id'))
+    visitor = db.relationship('Visitor', back_populates='cart')    #lazy=True insted of back_populates
 
 class Orders(db.Model):
     __tablename__ = 'orders'
@@ -144,19 +142,23 @@ class Orders(db.Model):
     ordered_items = db.relationship('OrderedItems', back_populates='order')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', back_populates='orders')   #lazy=True insted of back_populates
+    visitor_id = db.Column(db.Integer, db.ForeignKey('visitors.id'))
+    visitor = db.relationship('Visitor', back_populates='orders')   #lazy=True insted of back_populates
     delivery_info = db.relationship('DeliveryInfo', back_populates='order', uselist=False)
 
 class OrderedItems(db.Model):
     __tablename__ = 'ordered_items'
     id = db.Column(db.Integer, primary_key=True)
-    product_id = db.Column(db.Integer, nullable=False)
-    # product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
-    # product = db.relationship('Product', back_populates='ordered_items')
+    # product_id = db.Column(db.Integer, nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
+    product = db.relationship('Product', back_populates='ordered_items')
     product_name = db.Column(db.String(120), nullable=False)
     size = db.Column(db.String(50), nullable=False)
     color = db.Column(db.String(50), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float(120), nullable=False)
+    sale_price = db.Column(db.Float, nullable=False)
+    sale = db.Column(db.Boolean, default=False)
     oder_no = db.Column(db.Integer, nullable=False)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order = db.relationship('Orders', back_populates='ordered_items')   #lazy=True insted of back_populates
@@ -180,4 +182,6 @@ class DeliveryInfo(db.Model):
     order = db.relationship('Orders', back_populates='delivery_info')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', back_populates='delivery_info') #lazy=True insted of back_populates
+    visitor_id = db.Column(db.Integer, db.ForeignKey('visitors.id'))
+    visitor = db.relationship('Visitor', back_populates='delivery_info') #lazy=True insted of back_populates
 

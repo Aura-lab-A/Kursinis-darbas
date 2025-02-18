@@ -1,15 +1,20 @@
 {% extends 'base.html' %}
 {% block title %}Index Page{% endblock %}
 {% block content %}
-    <h1>Hello, World!</h1>
+    <h2>Sveiki, Administratoriau!</h2>
 
-    <!-- Nereikalingas -->
-    <p>{{ posts }}</p>
-    {% for post in posts %}
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.date }}, {{ post.author }}</p>
-        <hr>
-        <p>{{ post.content }}</p>
-        <hr>    
-    {% endfor %}
+    <div>
+        <h4>Administratoriaus funkcijos</h4>
+        <ul>
+            <li><a href="{{ url_for('display_shop_items') }}">Peržiūrėti parduotuvės prekes</a></li>
+            <li><a href="{{ url_for('add_shop_items') }}">Pridėti prekę</a></li>
+            <li><a href="{{ url_for('orders') }}">Peržiūrėti užsakymus</a></li>
+        </ul>    
+    </div>
+
+    <div>
+        <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+    </div>
+
+
 {% endblock %}

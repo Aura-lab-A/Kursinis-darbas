@@ -93,7 +93,7 @@ class LoginForm(FlaskForm):
 #     update_product = SubmitField('Atnaujinti produktą')
 
 class ShopItemsForm(FlaskForm):
-    product_name = StringField('Produkto vardas', validators=[DataRequired()])
+    name = StringField('Produkto vardas', validators=[DataRequired()])
     description = StringField('Produkto aprašymas', validators=[DataRequired()])
     price = FloatField('Kaina', validators=[DataRequired()])
     sale_price = FloatField('Išpardavimo kaina', validators=[DataRequired()])

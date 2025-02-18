@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Index Page{% endblock %}
+{% block content %}
+
+<div class="things-section">
+    <div class="text-box">
+        <p>Užsakymo ID: {{order.id}}</p>
+        <p>Užsakymo numeris: {{order.order_no}}</p>
+        <p>Užsakymo data: {{order.created_on}}</p>
+        <p>Bendra kaina: {{order.total_price}}</p> 
+        <p>Vartotojo ID: {{order.user_id}}</p>
+        <p>Lankytojo ID: {{order.visitor_id}}</p>
+
+            <form method="POST">
+                <div>
+                    <label>Pasirinkite užsakymo statusą:</label>
+                    <select name="status" id="status">
+                        <option value="" selected>{{order.status}}</option>
+                        {% for status in order_statuses %}
+                            {% if status != order.status %}
+                            <option value="{{ status }}">{{ status }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                
+                        <button type="submit">Pakeisti statusą</button>
+                    
+                </div>
+            </form>
+    </div>
+</div>
+
+
+{% endblock %}

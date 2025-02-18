@@ -9,6 +9,8 @@
             <th scope="col">Produkto pavadinimas</th>
             <th scope="col">Produkto aprašymas</th>
             <th scope="col">Vieneto kaina</th>
+            <th scope="col">Išpardavimo kaina</th>
+            <th scope="col">Išpardavimas</th>
             <th scope="col">Kiekis</th>
             <th scope="col">Kategorija</th>
         </tr>
@@ -16,12 +18,14 @@
 
     <tbody>
         <tr>
-            <form action="" method="POST" enctype="multipart/form-data">
+            <form action="" method="POST">
 
                 {{ form.hidden_tag() }}
-                <td>{{ form.product_name }}</td>
+                <td>{{ form.name }}</td>
                 <td>{{ form.description }}</td>
                 <td>{{ form.price }}</td>
+                <td>{{ form.sale_price }}</td>
+                <td>{{ form.sale }}</td>
                 <td>{{ form.quantity }}</td>
                 <td>{{ form.category }}</td>
                 <td>{{ form.add_product() }}</td>
@@ -29,16 +33,16 @@
             </form>
         </tr>
     </tbody>
-
-
-
 </table>
 
 
+<div>
+    <a href="{{ url_for('display_shop_items') }}">Peržiūrėti visas prekes</a>
+    <a href="{{ url_for('admin') }}">Administratoriaus puslapis</a>
+</div>
 
-
-
-
-
+<div>
+    <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+</div>
 
 {% endblock %}

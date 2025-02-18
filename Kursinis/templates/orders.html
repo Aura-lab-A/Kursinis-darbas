@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Shop items{% endblock %}
+{% block content %}
+
+
+{% if all_orders  %}    
+
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Užsakymo ID</th>
+                <th scope="col">Užsakymo numeris</th>
+                <th scope="col">Data</th>
+                <th scope="col">Bendra kaina</th>
+                <th scope="col">Statusas</th>
+                <th scope="col">Vartotojo ID</th>
+                <th scope="col">Lankytojo ID</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for order in all_orders  %} 
+                <tr>
+                    <th scope="row">{{ order.id }}</th>
+                        <td>{{ order.order_no }}</td>
+                        <td>{{ order.created_on }}</td>
+                        <td>{{ order.total_price }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>{{ order.user_id }}</td>
+                        <td>{{ order.visitor_id }}</td>
+
+                        <td>
+                            <a href="/update_order_status/{{ order.id }}">Atnaujinti statusą</a>
+                        </td>
+                </tr>
+            {% endfor  %} 
+        </tbody>
+    </table>
+
+    <div>
+        <a href="{{ url_for('admin') }}">Administratoriaus puslapis</a>
+    </div>
+
+{% else  %} 
+
+    <h2>Užsakymų nėra.</h2>
+
+{% endif  %} 
+
+<div>
+    <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+</div>
+
+{% endblock %}
