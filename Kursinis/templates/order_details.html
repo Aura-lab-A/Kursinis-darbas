@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Index Page{% endblock %}
+{% block content %}
+
+{{ order.id }}
+<h2>Jūsų užsakymo informacija:</h2>
+<p>Užsakymo numeris: {{ order.order_no }}</p>
+<p>Užsakymo numeris: {{ order.created_on }}</p>
+<p>Užsakymo statusas: {{ order.status }}</p>
+<p>Užsakymo vertė: {{ order.total_price }}</p>
+
+<h2>Užsakytos prekės:</h2>
+    
+<table>
+    <thead>
+        <tr>           
+            <th scope="col">Produkto pavadinimas</th>
+            <th scope="col">Vieneto kaina</th>
+            <th scope="col">Kiekis</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in ordered_items %} 
+            <tr>
+                <th scope="row">{{ item.product_name }}</th>
+                <th scope="row">{{ item.price }}</th>
+                <th scope="row">{{ item.quantity }}</th>
+            </tr>
+        {% endfor  %} 
+    </tbody>
+</table>
+
+ 
+{% endblock %}

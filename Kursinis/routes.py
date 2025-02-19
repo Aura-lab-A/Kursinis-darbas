@@ -2,14 +2,14 @@ from flask import Flask, render_template, request, Response, redirect, url_for, 
 import os
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
-from sqlalchemy import func
+from sqlalchemy import func, or_
 import requests
 import uuid
-# import secrets
-# from PIL import Image
-# from flask_mail import Message
+import secrets
+from PIL import Image
+from flask_mail import Message, Mail
 from Kursinis import forms, db, app, bcrypt
-from Kursinis.models import User, Visitor, Product, Photo, Size, Color, Cart, OrderedItems, Orders, DeliveryInfo
+from Kursinis.models import User, Visitor, VisitorInquire, Product, Photo, Size, Color, Cart, OrderedItems, Orders, DeliveryInfo
 
 
 
@@ -19,13 +19,14 @@ from Kursinis.models import User, Visitor, Product, Photo, Size, Color, Cart, Or
 def base() -> Response:
     return render_template('base.html')
 
-# @app.route('/search', methods=['POST'])
-# def search():
-#     query = request.form['query']
-#     # Perform search and return results
-#     return render_template('results.html', query=query, results=results)
-
-# SUSISIEKITE SU MUMIS
+@app.route('/search', methods=['POST'])
+def search():
+    query = request.form['query']
+    results = Product.query.filter(or_(
+        Product.name.like(f'%{query}%'),
+        Product.description.like(f'%{query}%')
+        )).all()
+    return render_template('search_results.html', query=query, results=results)
 
 
 #COOKIES
@@ -48,17 +49,6 @@ def set_visitor_cookie():
     session['visitor_cookie_id'] = cookie_id
 
 
-# @app.route('/setcookie') 
-# def setcookie(): 
-#     resp = make_response('Setting the cookie')  
-#     resp.set_cookie('User','11111111111') 
-#     return resp 
-
-# @app.route('/getcookie') 
-# def getcookie(): 
-#     User = request.cookies.get('User') 
-#     return 'User is a '+ User 
-
 @app.route('/') # jeigu administratorius useris?
 def vistors_count(): 
     # Converting str to int 
@@ -70,7 +60,7 @@ def vistors_count():
     resp.set_cookie('visitors count', str(count)) 
     return resp 
   
-  
+
 @app.route('/get') 
 def get_vistors_count(): 
     count = request.cookies.get('visitors count') 
@@ -84,17 +74,9 @@ def register():
     db.create_all()
     if current_user.is_authenticated:
         return redirect(url_for('account'))
-    # cookie_id = session.get('visitor_cookie_id')
-    # if not cookie_id:
-    #     set_visitor_cookie()
-    # user = User.query.filter_by(cookie_id = cookie_id).first()
     form = forms.RegisterForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        # user.name = form.name.data
-        # user.email=form.email.data
-        # user.password=hashed_password
-        # user.date_register=datetime.now()
         date_register = datetime.now()
         user = User(name=form.name.data, email=form.email.data, password=hashed_password, date_register=date_register)
         db.session.add(user)
@@ -120,11 +102,72 @@ def login():
     return render_template('login.html', form=form)
 
 
-# Profilis
-@app.route('/account')
+@app.route('/account', methods=['GET', 'POST'])
 @login_required
-def account():  
-    return render_template('account.html')
+def account():
+    if request.method == 'GET':
+        orders = Orders.query.filter(Orders.user_id == current_user.id).all()
+        form = forms.AccountUpdateForm()
+        return render_template('account.html', orders=orders, form=form)
+    else:
+        form = forms.AccountUpdateForm()
+        if form.validate_on_submit():
+            current_user.name = form.name.data
+            current_user.email = form.email.data
+            db.session.commit()
+            flash('Tavo paskyra atnaujinta!', 'success')
+            return redirect(url_for('account'))
+        
+
+@app.route('/order_details/<int:order_id>')
+@login_required
+def order_details(order_id):
+    order = Orders.query.filter(Orders.user_id == current_user.id).first()
+    ordered_items = OrderedItems.query.filter_by(order_id = order_id).all()
+    return render_template('order_details.html', order=order, ordered_items=ordered_items)
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Slaptažodžio atnaujinimo užklausa',
+                  sender='admin@gmail.com',
+                  recipients=[user.email])
+    msg.body = f'''Norėdami atnaujinti slaptažodį, paspauskite nuorodą:
+    {url_for('reset_token', token=token, _external=True)}
+    Jei jūs nedarėte šios užklausos, nieko nedarykite ir slaptažodis nebus pakeistas.
+    '''
+    print(msg.body)
+    email.send(msg)      #kas cia?
+
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = forms.ResetRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('Jums išsiųstas el. laiškas su slaptažodžio atnaujinimo instrukcijomis.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+@app.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('Užklausa netinkama arba pasibaigusio galiojimo', 'warning')
+        return redirect(url_for('reset_request'))
+    form = forms.PasswordResetForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash('Tavo slaptažodis buvo atnaujintas! Gali prisijungti', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', title='Reset Password', form=form)
 
 
 @app.route('/logout')
@@ -133,77 +176,24 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-# @app.route("/paskyra", methods=['GET', 'POST'])
-# @login_required
-# def paskyra():
-#     form = forms.PaskyrosAtnaujinimoForma()
-#     if form.validate_on_submit():
-#         if form.nuotrauka.data:
-#             nuotrauka = save_picture(form.nuotrauka.data)
-#             current_user.nuotrauka = nuotrauka
-#         current_user.vardas = form.vardas.data
-#         current_user.el_pastas = form.el_pastas.data
-#         db.session.commit()
-#         flash('Tavo paskyra atnaujinta!', 'success')
-#         return redirect(url_for('paskyra'))
-#     elif request.method == 'GET':
-#         form.vardas.data = current_user.vardas
-#         form.el_pastas.data = current_user.el_pastas
-#     nuotrauka = url_for('static', filename='profilio_nuotraukos/' + current_user.nuotrauka)
-#     return render_template('paskyra.html', title='Account', form=form, nuotrauka=nuotrauka)
-
-
-# def send_reset_email(user):
-#     token = user.get_reset_token()
-#     msg = Message('Slaptažodžio atnaujinimo užklausa',
-#                   sender='pythonkursascodeacademy@gmail.com',
-#                   recipients=[user.el_pastas])
-#     msg.body = f'''Norėdami atnaujinti slaptažodį, paspauskite nuorodą:
-#     {url_for('reset_token', token=token, _external=True)}
-#     Jei jūs nedarėte šios užklausos, nieko nedarykite ir slaptažodis nebus pakeistas.
-#     '''
-#     print(msg.body)
-#     # mail.send(msg)
-
-# @app.route("/reset_password", methods=['GET', 'POST'])
-# def reset_request():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('home'))
-#     form = forms.UzklausosAtnaujinimoForma()
-#     if form.validate_on_submit():
-#         user = Vartotojas.query.filter_by(el_pastas=form.el_pastas.data).first()
-#         send_reset_email(user)
-#         flash('Jums išsiųstas el. laiškas su slaptažodžio atnaujinimo instrukcijomis.', 'info')
-#         return redirect(url_for('prisijungti'))
-#     return render_template('reset_request.html', title='Reset Password', form=form)
-
-
-# @app.route("/reset_password/<token>", methods=['GET', 'POST'])
-# def reset_token(token):
-#     if current_user.is_authenticated:
-#         return redirect(url_for('home'))
-#     user = Vartotojas.verify_reset_token(token)
-#     if user is None:
-#         flash('Užklausa netinkama arba pasibaigusio galiojimo', 'warning')
-#         return redirect(url_for('reset_request'))
-#     form = forms.SlaptazodzioAtnaujinimoForma()
-#     if form.validate_on_submit():
-#         hashed_password = bcrypt.generate_password_hash(form.slaptazodis.data).decode('utf-8')
-#         user.slaptazodis = hashed_password
-#         db.session.commit()
-#         flash('Tavo slaptažodis buvo atnaujintas! Gali prisijungti', 'success')
-#         return redirect(url_for('prisijungti'))
-#     return render_template('reset_token.html', title='Reset Password', form=form)
-
-
-
-
 
 
 #PREKĖS IR UŽSAKYMAI
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def home() -> Response:
-    return render_template('home.html')
+    form = forms.ContactForm()
+    if form.validate_on_submit():
+        new_inquire = VisitorInquire(
+            name = form.name.data,
+            surname = form.surname.data,
+            email = form.email.data,
+            message = form.message.data
+            )
+        db.session.add(new_inquire)
+        db.session.commit()
+        flash('Žinutė išsiųsta!', 'success')
+        return redirect(url_for('home', form=form))
+    return render_template('home.html', form=form)
 
 
 @app.route('/printai')
@@ -327,7 +317,6 @@ def updated_cart():
         for old_item in old_items:
             db.session.delete(old_item)
         db.session.commit()
-        # items_in_cart = Cart.query.join(User).filter(User.cookie_id == cookie_id).all()
         items_in_cart = Cart.query.filter_by(user_id = current_user.id).all()
         return items_in_cart
     else:
@@ -353,7 +342,7 @@ def delete_cart_item(id):
         cookie_id = session.get('visitor_cookie_id')
         if not cookie_id:
             set_visitor_cookie()
-        item_in_cart = Cart.query.join(Visitor).filter(Visitor.cookie_id == cookie_id).get(id)
+        item_in_cart = Cart.query.join(Visitor).filter(Visitor.cookie_id == cookie_id, Cart.id == id).first()   #ar cia tikrai viskas gera??
         db.session.delete(item_in_cart)
         db.session.commit()
         return redirect(url_for('cart'))
@@ -402,8 +391,6 @@ def order() -> Response:
                 ).filter(Photo.product_id.in_(items_in_cart_ids)).group_by(Photo.product_id).subquery()
             items_in_cart_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
             total_price = sum(item.price * item.quantity for item in items_in_cart)
-            # for item in items_in_cart:
-            #     total_price += item.price * item.quantity
             form = forms.DeliveryInfoForm()
             return render_template('order.html', items_in_cart=items_in_cart, total_price=total_price, items_in_cart_photos=items_in_cart_photos, form=form)
     else:
@@ -446,6 +433,7 @@ def order() -> Response:
                     db.session.add(new_ordered_item)
                         
                     # produktas.quantity -= item_in_cart.quantity
+
                 form = forms.DeliveryInfoForm()
                 if form.validate_on_submit():                 #kazkas neveikia
                     delivery_info = DeliveryInfo(
@@ -466,14 +454,14 @@ def order() -> Response:
                         )
                     db.session.add(delivery_info)
                     db.session.commit()
-                # items_in_cart = updated_cart()     #updated_cart()
+
                 for ordered_item in items_in_cart:
                     db.session.delete(ordered_item)
 
                 db.session.commit()
 
                 flash('Užsakymas pateiktas sėkmingai!', 'success')
-                return redirect(url_for('order_info', order_id=new_order.id))
+                return redirect(url_for('order_info', order_id=new_order.id, form=form))
             
         else:
             cookie_id = session.get('visitor_cookie_id')
@@ -539,7 +527,7 @@ def order() -> Response:
                 db.session.commit()
 
                 flash('Užsakymas pateiktas sėkmingai!', 'success')
-                return redirect(url_for('order_info', order_id=new_order.id))
+                return redirect(url_for('order_info', order_id=new_order.id, form=form))
 
 
 @app.route('/order_info/<int:order_id>')
@@ -602,27 +590,87 @@ def add_shop_items():
                 quantity = form.quantity.data,
                 category = form.category.data,
                 date_added = datetime.now()
-                #picture
             )
             db.session.add(add_product)
             db.session.commit()
             flash('Naujas produktas išaugotas sėkmingai!', 'success')
-            return redirect(url_for('add_shop_items'))
+            return redirect(url_for('add_photo', product_id=add_product.id))
         return render_template('add_shop_items.html', form=form)
     return render_template('404.html')   # ar čia geras return?
 
-# def save_picture(form_picture):
-#     random_hex = secrets.token_hex(8)
-#     _, f_ext = os.path.splitext(form_picture.filename)
-#     picture_fn = random_hex + f_ext
-#     picture_path = os.path.join(app.root_path, 'static/profilio_nuotraukos', picture_fn)
 
-#     output_size = (125, 125)
-#     i = Image.open(form_picture)
-#     i.thumbnail(output_size)
-#     i.save(picture_path)
+def save_picture(form_picture):
+        random_hex = secrets.token_hex(8)
+        _, f_ext = os.path.splitext(form_picture.filename)
+        picture_fn = random_hex + f_ext
+        picture_path = os.path.join(app.root_path, 'static/images', picture_fn)
+        # output_size = (125, 125)
+        i = Image.open(form_picture)
+        # i.thumbnail(output_size)
+        i.save(picture_path)
+        return picture_fn
 
-#     return picture_fn
+
+@app.route('/add_photo/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def add_photo(product_id):
+    if current_user.name == 'admin':
+        form = forms.AddPhotoForm()
+        if form.validate_on_submit():
+            if form.photo1.data:
+                photo_filename1 = save_picture(form.photo1.data)
+                add_photo1 = Photo(
+                    name = photo_filename1,
+                    product_id = product_id
+                    )
+                db.session.add(add_photo1)
+            if form.photo2.data:
+                photo_filename2 = save_picture(form.photo2.data)
+                add_photo2 = Photo(
+                    name = photo_filename2,
+                    product_id = product_id
+                    )
+                db.session.add(add_photo2)
+            if form.photo3.data:
+                photo_filename3 = save_picture(form.photo3.data)
+                add_photo3 = Photo(
+                    name = photo_filename3,
+                    product_id = product_id
+                    )
+                db.session.add(add_photo3)
+            db.session.commit()
+            flash('Nuotraukos išaugotos sėkmingai!', 'success')
+            return redirect(url_for('add_color_size', product_id=product_id))
+        return render_template('add_photo.html', form=form, product_id=product_id)
+    return render_template('404.html')
+
+
+@app.route('/add_color_size/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def add_color_size(product_id):
+    if current_user.name == 'admin':
+        product = Product.query.get(product_id)
+        if request.method == 'POST':
+            color_id = request.form.get('color')
+            size_id = request.form.get('size')
+
+            color = Color.query.get(color_id)
+            size = Size.query.get(size_id)
+
+            if color and size:
+                product.colors.append(color)
+                product.sizes.append(size)
+                db.session.commit()
+                flash('Color and size added successfully!', 'success')
+            else:
+                flash('Invalid color or size selected.', 'danger')
+
+            return redirect(url_for('add_color_size', product_id=product_id))
+                                            
+        colors = Color.query.all()
+        sizes = Size.query.all()
+        return render_template('add_color_size.html', product=product, colors=colors, sizes=sizes)  
+    return render_template('404.html')
 
 
 @app.route("/update_shop_item/<int:product_id>", methods=['GET', 'POST'])
@@ -641,7 +689,7 @@ def update_shop_item(product_id):
         form.quantity.render_kw = {'placeholder': product_to_update.quantity}
         form.category.render_kw = {'placeholder': product_to_update.category}
 
-        if form.validate_on_submit():    #galima daryti per try .update...
+        if form.validate_on_submit():
             product_to_update.name = form.name.data
             product_to_update.description = form.description.data
             product_to_update.price = form.price.data
@@ -649,7 +697,7 @@ def update_shop_item(product_id):
             product_to_update.sale = form.sale.data
             product_to_update.quantity = form.quantity.data
             product_to_update.category = form.category.data
-            #picture
+            #photo
             db.session.commit()
             flash('Produktas atnaujintas sėkmingai!', 'success')
             return redirect(url_for('display_shop_items'))

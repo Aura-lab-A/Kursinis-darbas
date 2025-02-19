@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Index Page{% endblock %}
+{% block content %}
+
+{% if results %}
+    <h4>...{{ query }}... paieškos resultatai:</h4>
+
+    <div>
+        {% for result in results %}
+            <p>{{ result.name }}</p>
+            <p>{{ result.description }}</p>
+        {% endfor %}   
+    </div>
+
+{% else %}
+
+    <p>Su ...{{ query }}... nieko nerasta.</p>
+
+{% endif %}
+
+<div>
+    <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+</div>
+
+{% endblock %}

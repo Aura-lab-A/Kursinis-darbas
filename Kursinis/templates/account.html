@@ -6,7 +6,69 @@
 
     <h4>Profilis</h4>
 
-<p>Name: {{ current_user.name }}</p>
-<p>Email: {{ current_user.email }}</p>
+        <p>Name: {{ current_user.name }}</p>
+        <p>Email: {{ current_user.email }}</p>
 
+
+    <h4>Atnaujinti profilį</h4>
+
+        <form method='POST'>
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.name.label }}
+
+                {% if form.name.errors %}
+                    {{ form.name }}
+                    <div class='invalid-feedback'>
+                        {% for error in form.name.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.name }}
+                {% endif %}
+            </div>
+            <div>
+                {{ form.email.label }}
+                {% if form.email.errors %}
+                    {{ form.email }}
+                    <div>
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email }}
+                {% endif %}
+            </div>
+            <div>
+                {{ form.submit }}
+            </div>
+        </form>
+
+
+{% if current_user.name == 'admin' %}
+
+    <div>
+        <a href="{{ url_for('admin') }}">Administratoriaus funkcijos</a>
+    </div>
+
+{% endif %}
+
+
+    <h4>Ankstesni užsakymai</h4>
+
+        <div class="orders">
+            {% for order in orders %}
+                <a href="{{ url_for('order_details', order_id=order.id) }}">
+                    <p>Užsakymo numeris: {{ order.order_no }}</p>
+                    <p>Užsakymo data: {{ order.created_on }}</p>
+                    <p>Užsakymo vertė: {{ order.total_price }}</p>
+                    <p>Užsakymo statusas: {{ order.status }}</p>
+                </a>
+            {% endfor %}
+        </div>
+
+
+        
 {% endblock %}

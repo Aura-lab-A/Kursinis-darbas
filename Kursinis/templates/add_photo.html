@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Add shop items{% endblock %}
+{% block content %}
+    
+
+
+
+<div>
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <fieldset>
+            <legend class="border-bottom mb-4">Pridėkite nuotrauką</legend>
+                <label for="photo">{{ form.photo1.label.text }}</label>
+                {{ form.photo1() }}
+                <label for="photo">{{ form.photo2.label.text }}</label>
+                {{ form.photo2() }}
+                <label for="photo">{{ form.photo3.label.text }}</label>
+                {{ form.photo3() }}
+
+                {% if form.photo3.errors %}
+                    {% for error in form.photo.errors %}
+                        <span class="text-danger">{{ error }}</span></br>
+                    {% endfor %}
+                {% endif %}
+                
+                {{ form.add_photo() }}
+        </fieldset>
+    </form>
+</div>
+
+
+<div>
+    <a href="{{ url_for('display_shop_items') }}">Peržiūrėti visas prekes</a>
+    <a href="{{ url_for('admin') }}">Administratoriaus puslapis</a>
+</div>
+
+<div>
+    <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+
+
+{% endblock %}

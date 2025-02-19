@@ -58,6 +58,14 @@ class Account(db.Model):
 #             return None
 #         return Vartotojas.query.get(user_id)
 
+class VisitorInquire(db.Model):
+    __tablename__ = 'customer_inquires'    #visitor inquires
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    surname = db.Column(db.String(120))
+    email = db.Column(db.String(120), nullable=False)
+    message = db.Column(db.Text)
+
 
 
 #Produktai
@@ -89,6 +97,7 @@ class Product(db.Model):
     ordered_items = db.relationship('OrderedItems', back_populates='product')
 
 
+
 class Photo(db.Model):
     __tablename__ = 'photos'
     id = db.Column(db.Integer, primary_key=True)
@@ -109,6 +118,7 @@ class Color(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     color = db.Column(db.String(50), nullable=False)    #unique=True
     products = db.relationship('Product', secondary=product_color_association, back_populates='colors')
+
 
 
 # # Užsakymas

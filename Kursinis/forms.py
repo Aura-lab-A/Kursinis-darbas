@@ -2,7 +2,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, FloatField, IntegerField, DecimalField, EmailField, DateField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, NumberRange, Optional, Regexp
-from flask_wtf.file import FileField, FileRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from datetime import datetime, timedelta
 from Kursinis import User, Product, current_user, app
 
@@ -45,52 +45,46 @@ class LoginForm(FlaskForm):
 #     password = PasswordField('New Password', [InputRequired(), EqualTo('confirm', message='Passwords must match')])
 #     confirm  = PasswordField('Repeat Password')
 
-# class PaskyrosAtnaujinimoForma(FlaskForm):
-#     vardas = StringField('Vardas', [DataRequired()])
-#     el_pastas = StringField('El. paštas', [DataRequired()])
-#     nuotrauka = FileField('Atnaujinti profilio nuotrauką', validators=[FileAllowed(['jpg', 'png'])])
-#     submit = SubmitField('Atnaujinti')
+class AccountUpdateForm(FlaskForm):
+    name = StringField('Vardas', [DataRequired()])
+    email = StringField('El. paštas', [DataRequired(), Email()])
+    submit = SubmitField('Atnaujinti')
 
-#     def tikrinti_varda(self, vardas):
-#         if vardas.data != current_user.vardas:
-#             vartotojas = Vartotojas.query.filter_by(vardas=vardas.data).first()
-#             if vartotojas:
-#                 raise ValidationError('Šis vardas panaudotas. Pasirinkite kitą.')
+    def validate_name(self, name):
+        if name.data != current_user.name:
+            user = User.query.filter_by(name=name.data).first()
+            if user:
+                raise ValidationError('Šis vardas panaudotas. Pasirinkite kitą.')
 
-#     def tikrinti_pasta(self, el_pastas):
-#         if el_pastas.data != current_user.el_pastas:
-#             vartotojas = Vartotojas.query.filter_by(el_pastas=el_pastas.data).first()
-#             if vartotojas:
-#                 raise ValidationError('Šis el. pašto adresas panaudotas. Pasirinkite kitą.')
+    def validate_email(self, email):
+        if email.data != current_user.email:
+            user = User.query.filter_by(email=email.data).first()
+            if user:
+                raise ValidationError('Šis el. pašto adresas panaudotas. Pasirinkite kitą.')
 
-# class UzklausosAtnaujinimoForma(FlaskForm):
-#     el_pastas = StringField('El. paštas', validators=[DataRequired(), Email()])
-#     submit = SubmitField('Gauti')
+class ResetRequestForm(FlaskForm):
+    email = StringField('El. paštas', validators=[DataRequired(), Email()])
+    submit = SubmitField('Gauti')
 
-#     def validate_email(self, el_pastas):
-#         user = Vartotojas.query.filter_by(el_pastas=el_pastas.data).first()
-#         if user is None:
-#             raise ValidationError('Nėra paskyros, registruotos šiuo el. pašto adresu. Registruokitės.')
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is None:
+            raise ValidationError('Nėra paskyros, registruotos šiuo el. pašto adresu. Registruokitės.')
 
 
-# class SlaptazodzioAtnaujinimoForma(FlaskForm):
-#     slaptazodis = PasswordField('Slaptažodis', validators=[DataRequired()])
-#     patvirtintas_slaptazodis = PasswordField('Pakartokite slaptažodį',
-#                                              validators=[DataRequired(), EqualTo('slaptazodis')])
-#     submit = SubmitField('Atnaujinti Slaptažodį')
+class PasswordResetForm(FlaskForm):
+    password = PasswordField('Slaptažodis', validators=[DataRequired()])
+    confirm_password = PasswordField('Pakartokite slaptažodį', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Atnaujinti slaptažodį')
 
-# class ProductForm(FlaskForm):
-#     id = IntegerField('Produkto ID', validators=[DataRequired()])
-#     name = StringField('Produkto vardas', validators=[DataRequired()])
-#     description = StringField('Produkto aprašymas', validators=[DataRequired()])
-#     price = FloatField('Kaina', validators=[DataRequired()])
-#     sale_price = FloatField('Išpardavimo kaina', validators=[DataRequired()])
-#     sale = BooleanField('Išpardavimas')
-#     quantity = IntegerField('Kiekis', validators=[DataRequired(), NumberRange(min=0)])
-#     category = StringField('Produkto kategorija', validators=[DataRequired()])
-#     #date_added = DateField('Data', validators=[DataRequired()])
-#     add_product = SubmitField('Pridėti produktą')
-#     update_product = SubmitField('Atnaujinti produktą')
+
+class ContactForm(FlaskForm):
+    name = StringField('Vardas*', [DataRequired()])
+    surname = StringField('Pavardė', [Optional()])
+    email = StringField('El. paštas*', [DataRequired(), Email()])
+    message = StringField('Žinutė*', [DataRequired()])
+    submit = SubmitField('Siųsti')
+
 
 class ShopItemsForm(FlaskForm):
     name = StringField('Produkto vardas', validators=[DataRequired()])
@@ -104,10 +98,12 @@ class ShopItemsForm(FlaskForm):
     update_product = SubmitField('Atnaujinti produktą')
 
 
-# Reikia atskirų formų:
-#     photos = db.relationship('Photo', back_populates='product')
-#     sizes = db.relationship('Size', secondary=product_size_association, back_populates='products')
-#     colors = db.relationship('Color', secondary=product_color_association, back_populates='products')
+class AddPhotoForm(FlaskForm):
+    photo1 = FileField('Pridėti nuotrauką #1', validators=[FileAllowed(['jpg', 'png'])])
+    photo2 = FileField('Pridėti nuotrauką #2', validators=[FileAllowed(['jpg', 'png'])])
+    photo3 = FileField('Pridėti nuotrauką #3', validators=[FileAllowed(['jpg', 'png'])])
+    add_photo = SubmitField('Pridėti')
+
 
 
 
