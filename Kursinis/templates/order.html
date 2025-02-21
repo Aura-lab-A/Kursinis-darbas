@@ -8,11 +8,11 @@
 
     <form method="POST">
 
-        <div class="printai">
+        <div class="cart-item-container">
             {% for item in items_in_cart %}
-                <div class="print">
+                <div class="cart-item">
 
-                    <div class="product-image">
+                    <div class="cart-image">
                         <a href="{{ url_for('produktas', product_id=item.product_id) }}">
                             {% for photo in items_in_cart_photos %}
                                 {% if photo.product_id == item.product_id %}                        
@@ -22,26 +22,26 @@
                         </a>
                     </div>
 
-                    <div class="product-name-price">
+                    <div class="item-name-price">
                         <a href="{{ url_for('produktas', product_id=item.product_id) }}">
                             <h4>{{ item.product_name }}</h4>  
                         </a>
-                        <p>{{ item.size }}</p>
-                        <p>{{ item.color }}</p>
-                        <p>{{ item.quantity }}</p>
-                        <p>{{ item.price }} EUR</p>
+                        <p>Dydis: {{ item.size }}</p>
+                        <p>Spalva: {{ item.color }}</p>
+                        <p>Kiekis: {{ item.quantity }}</p>
+                        <p>Vieneto kaina: {{ item.price }} EUR</p>
                     </div>
                 </div>
             {% endfor %}
         </div>
-            <p>Benrda suma: {{ total_price }} EUR</p>
+            <p class="cart-price">Benrda suma: {{ total_price }} EUR</p>
 
     </form>
 
 
     <h1>Pristatymo informacija</h1>
 
-        <form method='POST'>
+        <form class="delivery-form" method='POST'>
             {{ form.hidden_tag() }}
             <div>
                 {{ form.name.label }}
@@ -183,18 +183,16 @@
                 {% endif %}
             </div>
 
+            <div>
+                <h1>Mokėjimo informacija</h1>
+                <p>Bankinis pavedimas...</p>
+            </div>
+
+            <div>
+                {{ form.submit }}
+            </div>
+ 
         </form>
-
-        <div>
-            {{ form.submit }}
-        </div>
-
-
-
-        <div>
-            <h1>Mokėjimo informacija</h1>
-            <p>Pervedimas į banko sąskaitą:</p>
-        </div>
 
 
 {% else %}

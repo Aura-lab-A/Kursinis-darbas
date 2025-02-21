@@ -1,4 +1,179 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="puslapis.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="4087"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="colors" custom_title="0" dock_id="1" table="4,6:maincolors"/><dock_state state="000000ff00000000fd00000001000000020000043c000002befc0100000001fb000000160064006f0063006b00420072006f007700730065003101000000000000043c0000011800ffffff000002580000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="accounts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="29"/><column index="3" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="colors" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="36"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="photos" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="214"/><column index="3" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="product_color" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="76"/><column index="2" value="61"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="product_size" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="76"/><column index="2" value="55"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="products" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="117"/><column index="3" value="93"/><column index="4" value="39"/><column index="5" value="65"/><column index="6" value="46"/><column index="7" value="55"/><column index="8" value="57"/><column index="9" value="210"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sizes" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="46"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;1&quot;, &quot;1&quot;);
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="puslapis.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="4087"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="visitors" custom_title="0" dock_id="1" table="4,8:mainvisitors"/><dock_state state="000000ff00000000fd00000001000000020000043c000002befc0100000001fb000000160064006f0063006b00420072006f007700730065003101000000000000043c0000013600ffffff000002580000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="accounts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="29"/><column index="3" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="photos" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="124"/><column index="3" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="products" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="29"/><column index="2" value="93"/><column index="3" value="300"/><column index="4" value="39"/><column index="5" value="65"/><column index="6" value="31"/><column index="7" value="55"/><column index="8" value="57"/><column index="9" value="210"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="visitors" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="31"/><column index="2" value="288"/><column index="3" value="156"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;SEA&quot;, &quot;Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas&quot;, &quot;20&quot;, &quot;15&quot;, &quot;0&quot;, &quot;100&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;SKY&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;100&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;TREES&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;1&quot;, &quot;100&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;FOREST&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;20&quot;, &quot;15&quot;, &quot;1&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;OCEAN&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;WAVES&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;0&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;CLOUDS&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;20&quot;, &quot;15&quot;, &quot;0&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;MOUNTAINS&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;RIVER&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;0&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;DESERT&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;20&quot;, &quot;15&quot;, &quot;0&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;STAR&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;JUGLE&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;1&quot;, &quot;3&quot;, &quot;print&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+
+
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;PILLAR&quot;, &quot;Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas&quot;, &quot;20&quot;, &quot;15&quot;, &quot;0&quot;, &quot;100&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;SCULPTURE&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;100&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;FRAME&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;1&quot;, &quot;100&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;CIRCLE&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;20&quot;, &quot;15&quot;, &quot;1&quot;, &quot;3&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;RECTANGULAR&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;3&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;SHAPE&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;0&quot;, &quot;3&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;FIGURE&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;20&quot;, &quot;15&quot;, &quot;0&quot;, &quot;3&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;TRIANGLE&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;3&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;RHOMBUS&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;0&quot;, &quot;3&quot;, &quot;candel&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+
+
+
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;Something 1&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;20&quot;, &quot;15&quot;, &quot;0&quot;, &quot;3&quot;, &quot;smth&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;Something 2&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;25&quot;, &quot;20&quot;, &quot;0&quot;, &quot;3&quot;, &quot;smth&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+INSERT INTO products (name, description, price, sale_price, sale, quantity, category, date_added) VALUES (&quot;Something 3&quot;, &quot; Aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas aprašymas &quot;, &quot;15&quot;, &quot;10&quot;, &quot;1&quot;, &quot;3&quot;, &quot;smth&quot;, &quot;2025-02-16 18:21:50.143841&quot;);
+
+
+
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_1.jpg&quot;, &quot;1&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_2.jpg&quot;, &quot;1&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_3.jpg&quot;, &quot;1&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_1.jpg &quot;, &quot;2&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_2.jpg &quot;, &quot;2&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_3.jpg &quot;, &quot;2&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_1.jpg &quot;, &quot;3&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_2.jpg &quot;, &quot;3&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_3.jpg &quot;, &quot;3&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_1.jpg &quot;, &quot;4&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_2.jpg &quot;, &quot;4&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_3.jpg &quot;, &quot;4&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_1.jpg &quot;, &quot;5&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_2.jpg &quot;, &quot;5&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_3.jpg &quot;, &quot;5&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_1.jpg &quot;, &quot;6&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_2.jpg &quot;, &quot;6&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_3.jpg &quot;, &quot;6&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_1.jpg &quot;, &quot;7&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_2.jpg &quot;, &quot;7&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_3.jpg &quot;, &quot;7&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_1.jpg &quot;, &quot;8&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_2.jpg &quot;, &quot;8&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_3.jpg &quot;, &quot;8&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_1.jpg &quot;, &quot;9&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_2.jpg &quot;, &quot;9&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_3.jpg &quot;, &quot;9&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_1.jpg &quot;, &quot;10&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_2.jpg &quot;, &quot;10&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 1_3.jpg &quot;, &quot;10&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_1.jpg &quot;, &quot;11&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_2.jpg &quot;, &quot;11&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 2_3.jpg &quot;, &quot;11&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_1.jpg &quot;, &quot;12&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_2.jpg &quot;, &quot;12&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Print 3_3.jpg &quot;, &quot;12&quot;);
+
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_1.jpg&quot;, &quot;13&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_2.jpg&quot;, &quot;13&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_3.jpg&quot;, &quot;13&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_1.jpg &quot;, &quot;14&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_2.jpg &quot;, &quot;14&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_3.jpg &quot;, &quot;14&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_1.jpg &quot;, &quot;15&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_2.jpg &quot;, &quot;15&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_3.jpg &quot;, &quot;15&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_1.jpg &quot;, &quot;16&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_2.jpg &quot;, &quot;16&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_3.jpg &quot;, &quot;16&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_1.jpg &quot;, &quot;17&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_2.jpg &quot;, &quot;17&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_3.jpg &quot;, &quot;17&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_1.jpg &quot;, &quot;18&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_2.jpg &quot;, &quot;18&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_3.jpg &quot;, &quot;18&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_1.jpg &quot;, &quot;19&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_2.jpg &quot;, &quot;19&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 3_3.jpg &quot;, &quot;19&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_1.jpg &quot;, &quot;20&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_2.jpg &quot;, &quot;20&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 1_3.jpg &quot;, &quot;20&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_1.jpg &quot;, &quot;21&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_2.jpg &quot;, &quot;21&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Candel 2_3.jpg &quot;, &quot;21&quot;);
+
+
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 3_1.jpg &quot;, &quot;22&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 3_2.jpg &quot;, &quot;22&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 3_3.jpg &quot;, &quot;22&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 1_1.jpg &quot;, &quot;23&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 1_2.jpg &quot;, &quot;23&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 1_3.jpg &quot;, &quot;23&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 2_1.jpg &quot;, &quot;24&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 2_2.jpg &quot;, &quot;24&quot;);
+INSERT INTO photos (name, product_id) VALUES (&quot;Smth 2_3.jpg &quot;, &quot;24&quot;);
+
+
+INSERT INTO sizes (size) VALUES (&quot;30X40&quot;);
+INSERT INTO sizes (size) VALUES (&quot;40X50&quot;);
+INSERT INTO sizes (size) VALUES (&quot;S&quot;);
+INSERT INTO sizes (size) VALUES (&quot;M&quot;);
+INSERT INTO sizes (size) VALUES (&quot;L&quot;);
+
+
+INSERT INTO colors (color) VALUES (&quot;Juoda&quot;);
+INSERT INTO colors (color) VALUES (&quot;Raudona&quot;);
+INSERT INTO colors (color) VALUES (&quot;Mėlyna&quot;);
+INSERT INTO colors (color) VALUES (&quot;Žalia&quot;);
+INSERT INTO colors (color) VALUES (&quot;Oranžinė&quot;);
+INSERT INTO colors (color) VALUES (&quot;Balta&quot;);
+
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;1&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;1&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;1&quot;, &quot;3&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;2&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;2&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;2&quot;, &quot;4&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;3&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;3&quot;, &quot;5&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;3&quot;, &quot;6&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;4&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;5&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;5&quot;, &quot;5&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;6&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;7&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;7&quot;, &quot;4&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;8&quot;, &quot;3&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;9&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;9&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;10&quot;, &quot;6&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;11&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;11&quot;, &quot;3&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;11&quot;, &quot;4&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;12&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;12&quot;, &quot;5&quot;);
+
+
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;13&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;13&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;13&quot;, &quot;3&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;14&quot;, &quot;6&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;14&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;14&quot;, &quot;4&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;15&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;15&quot;, &quot;5&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;15&quot;, &quot;6&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;16&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;17&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;17&quot;, &quot;5&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;18&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;19&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;19&quot;, &quot;4&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;20&quot;, &quot;3&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;21&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;21&quot;, &quot;2&quot;);
+
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;22&quot;, &quot;2&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;22&quot;, &quot;4&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;23&quot;, &quot;3&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;24&quot;, &quot;1&quot;);
+INSERT INTO product_color (products_id, colors_id) VALUES (&quot;24&quot;, &quot;2&quot;);
+
+
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;1&quot;, &quot;1&quot;);
 INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;1&quot;, &quot;2&quot;);
 INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;2&quot;, &quot;1&quot;);
 INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;3&quot;, &quot;1&quot;);
@@ -7,6 +182,34 @@ INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;4&quot;, &quot;1&
 INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;5&quot;, &quot;1&quot;);
 INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;5&quot;, &quot;2&quot;);
 INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;6&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;7&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;8&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;8&quot;, &quot;2&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;9&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;10&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;10&quot;, &quot;2&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;11&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;12&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;12&quot;, &quot;2&quot;);
 
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;13&quot;, &quot;3&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;13&quot;, &quot;5&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;14&quot;, &quot;4&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;15&quot;, &quot;3&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;15&quot;, &quot;4&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;16&quot;, &quot;5&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;17&quot;, &quot;3&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;17&quot;, &quot;5&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;18&quot;, &quot;4&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;19&quot;, &quot;4&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;20&quot;, &quot;4&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;20&quot;, &quot;5&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;21&quot;, &quot;3&quot;);
+
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;22&quot;, &quot;1&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;22&quot;, &quot;2&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;23&quot;, &quot;3&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;24&quot;, &quot;4&quot;);
+INSERT INTO product_size (products_id, sizes_id) VALUES (&quot;24&quot;, &quot;5&quot;);
 
 </sql><current_tab id="0"/></tab_sql></sqlb_project>

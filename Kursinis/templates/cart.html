@@ -4,15 +4,17 @@
 
 {% if items_in_cart %}
 
-<h1>Prekės</h1>
+<h2>Prekės</h2>
+
+<div clas="cart">
 
     <form method="POST">
 
-        <div class="printai">
+        <div class="cart-item-container">
             {% for item in items_in_cart %}
-                <div class="print">
+                <div class="cart-item">
 
-                    <div class="product-image">
+                    <div class="cart-image">
                         <a href="{{ url_for('produktas', product_id=item.product_id) }}">
                             {% for photo in items_in_cart_photos %}
                                 {% if photo.product_id == item.product_id %}                        
@@ -22,14 +24,14 @@
                         </a>
                     </div>
 
-                    <div class="product-name-price">
+                    <div class="item-name-price">
                         <a href="{{ url_for('produktas', product_id=item.product_id) }}">
                             <h4>{{ item.product_name }}</h4>  
                         </a>
-                        <p>{{ item.size }}</p>
-                        <p>{{ item.color }}</p>
-                        <p>{{ item.quantity }}</p>
-                        <p>{{ item.price }} EUR</p>
+                        <p>Dydis: {{ item.size }}</p>
+                        <p>Spalva: {{ item.color }}</p>
+                        <p>Kiekis: {{ item.quantity }}</p>
+                        <p>Vieneto kaina: {{ item.price }} EUR</p>
                     </div>
                     <div>
                         <a href="{{ url_for('delete_cart_item', id=item.id) }}">Pašalinti</a>
@@ -37,14 +39,20 @@
                 </div>
             {% endfor %}
         </div>
-            <p>Benrda suma: {{ total_price }} EUR</p>
+            <p class="cart-price">Benrda suma: {{ total_price }} EUR</p>
 
     </form>
 
-    <div>
+    <div class="cart-delete">
         <a href="{{ url_for('delete_cart_items') }}">Išvalyti krepšelį</a>
-        <a href="{{ url_for('order') }}">Atlikti užsakymą</a>
     </div>
+    <div class="cart-button-space">
+        <form action="{{ url_for('order') }}"> 
+            <button type="submit" class="cart-button">Atlikti užsakymą</button>
+        </form>    
+    </div>
+
+</div>
 
 
 {% else %}

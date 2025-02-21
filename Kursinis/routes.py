@@ -105,6 +105,7 @@ def login():
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
+    db.create_all()
     if request.method == 'GET':
         orders = Orders.query.filter(Orders.user_id == current_user.id).all()
         form = forms.AccountUpdateForm()
@@ -122,6 +123,7 @@ def account():
 @app.route('/order_details/<int:order_id>')
 @login_required
 def order_details(order_id):
+    db.create_all()
     order = Orders.query.filter(Orders.user_id == current_user.id).first()
     ordered_items = OrderedItems.query.filter_by(order_id = order_id).all()
     return render_template('order_details.html', order=order, ordered_items=ordered_items)
@@ -141,6 +143,7 @@ def send_reset_email(user):
 
 @app.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
+    db.create_all()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = forms.ResetRequestForm()
@@ -154,6 +157,7 @@ def reset_request():
 
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
+    db.create_all()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     user = User.verify_reset_token(token)
@@ -181,6 +185,7 @@ def logout():
 #PREKĖS IR UŽSAKYMAI
 @app.route('/home', methods=['GET', 'POST'])
 def home() -> Response:
+    db.create_all()
     form = forms.ContactForm()
     if form.validate_on_submit():
         new_inquire = VisitorInquire(
@@ -206,25 +211,37 @@ def printai() -> Response:
         func.min(Photo.id).label('min_id')
         ).filter(Photo.product_id.in_(print_ids)).group_by(Photo.product_id).subquery()
     all_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
-
-    # print("Products found:", [product.name for product in all_prints.items])
-    # print("Photos found:", [photo.name for photo in all_photos])
-
     return render_template('printai.html', all_prints=all_prints, all_photos=all_photos)
-
 
 
 @app.route('/zvakes')
 def zvakes() -> Response:
-    return render_template('zvakes.html')
+    page = request.args.get('page', 1, type=int)
+    all_candles = Product.query.filter_by(category ='candle').paginate(page=page, per_page=6)
+    candle_ids = [candle_item.id for candle_item in all_candles.items]
+    subquery = db.session.query(
+        Photo.product_id,
+        func.min(Photo.id).label('min_id')
+        ).filter(Photo.product_id.in_(candle_ids)).group_by(Photo.product_id).subquery()
+    all_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
+    return render_template('zvakes.html', all_candles=all_candles, all_photos=all_photos)
+
 
 @app.route('/kazkas')
 def kazkas() -> Response:
-    return render_template('kazkas.html')
+    page = request.args.get('page', 1, type=int)
+    all_smths = Product.query.filter_by(category ='smth').paginate(page=page, per_page=6)
+    smth_ids = [smth_item.id for smth_item in all_smths.items]
+    subquery = db.session.query(
+        Photo.product_id,
+        func.min(Photo.id).label('min_id')
+        ).filter(Photo.product_id.in_(smth_ids)).group_by(Photo.product_id).subquery()
+    all_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
+    return render_template('kazkas.html', all_smths=all_smths, all_photos=all_photos)
+
 
 @app.route('/produktas/<int:product_id>', methods=['GET', 'POST'])
 def produktas(product_id) -> Response:
-    db.create_all()
 
     if request.method == 'GET':
         produktas = Product.query.get(product_id)
@@ -310,7 +327,7 @@ def produktas(product_id) -> Response:
 
 def updated_cart():
     now = datetime.now()
-    time_span = timedelta(minutes=5)
+    time_span = timedelta(minutes=30)
 
     if current_user.is_authenticated:
         old_items = Cart.query.filter(Cart.added_at < now - time_span).all()
@@ -379,6 +396,7 @@ def cart() -> Response:
 
 @app.route('/order', methods=['GET', 'POST'])    #gali b8ti total price per product in cart
 def order() -> Response:
+    db.create_all()
     if request.method == 'GET':
         items_in_cart = updated_cart()      #updated_cart()
         if not items_in_cart:
@@ -579,6 +597,7 @@ def display_shop_items():
 @login_required
 def add_shop_items():
     if current_user.name == 'admin':
+        db.create_all
         form = forms.ShopItemsForm()
         if form.validate_on_submit():
             add_product = Product(
@@ -615,6 +634,7 @@ def save_picture(form_picture):
 @login_required
 def add_photo(product_id):
     if current_user.name == 'admin':
+        db.create_all()
         form = forms.AddPhotoForm()
         if form.validate_on_submit():
             if form.photo1.data:
@@ -648,6 +668,7 @@ def add_photo(product_id):
 @app.route('/add_color_size/<int:product_id>', methods=['GET', 'POST'])
 @login_required
 def add_color_size(product_id):
+    db.create_all()
     if current_user.name == 'admin':
         product = Product.query.get(product_id)
         if request.method == 'POST':
@@ -677,7 +698,8 @@ def add_color_size(product_id):
 @login_required
 def update_shop_item(product_id):
     if current_user.name == 'admin':
-
+        
+        db.create_all()
         form = forms.ShopItemsForm()
         product_to_update = Product.query.get(product_id)
 
@@ -712,8 +734,14 @@ def update_shop_item(product_id):
 @login_required
 def delete_shop_item(product_id):
     if current_user.name == 'admin':
+        db.create_all()
         product_to_delete = Product.query.get(product_id)
         db.session.delete(product_to_delete)
+
+        # photos_to_delete = Photo.query.filter_by(product_id = product_to_delete.id).all()
+        # for photo in photos_to_delete:
+        #     db.session.delete(photo)
+
         db.session.commit()
         flash('Produktas ištrintas sėkmingai!', 'success')    #exemption could be included
         return redirect(url_for('display_shop_items'))
@@ -722,6 +750,7 @@ def delete_shop_item(product_id):
 @app.route('/orders', methods=['GET', 'POST'])
 @login_required
 def orders():
+    db.create_all
     if current_user.name == 'admin':
         all_orders = Orders.query.all()
         return render_template('orders.html', all_orders=all_orders)
@@ -730,6 +759,7 @@ def orders():
 @app.route('/update_order_status/<int:order_id>', methods=['GET', 'POST'])
 @login_required
 def update_order_status(order_id):
+    db.create_all
     if current_user.name == 'admin':
         order_statuses = ['Pateiktas', 'Paruoštas', 'Išsiųstas', 'Baigtas', 'Problema']
         order = Orders.query.get(order_id)
@@ -741,6 +771,15 @@ def update_order_status(order_id):
         return render_template('update_order_status.html', order=order, order_statuses=order_statuses)
     return render_template('404.html')
 
+
+@app.route('/display_visitor_inquires', methods=['GET', 'POST'])
+@login_required
+def display_visitor_inquires():
+    if current_user.name == 'admin':
+        db.create_all
+        inquires = VisitorInquire.query.all()
+        return render_template('display_visitor_inquires.html', inquires=inquires)
+    return render_template('404.html')   # ar čia geras return?
            
 
 #KLAIDOS

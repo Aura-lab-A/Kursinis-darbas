@@ -38,7 +38,7 @@
                         <td>
                             <a href="/update_shop_item/{{ product.id }}">Atnaujinti</a>
                             <br>
-                            <a href="/delete-shop-item/{{ product.id }}">Ištrinti</a>
+                            <a href="{{ url_for('delete_shop_item', product_id=product.id) }}">Ištrinti</a>
                         </td>
                 </tr>
             {% endfor  %} 

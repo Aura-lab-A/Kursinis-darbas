@@ -2,19 +2,12 @@
 {% block title %}Register{% endblock %}
 {% block content %}
 
-    <div class="reg-log">    
+    <div>    
         <h1>Registruotis</h1>
-        <!-- <form method="POST" action="/register">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Register</button>
-        </form> -->
     </div>
 
     <div>
-        <form method='POST'>
+        <form  class="reg-log-form" method='POST'>
             {{ form.hidden_tag() }}
             <div>
                 {{ form.name.label }}

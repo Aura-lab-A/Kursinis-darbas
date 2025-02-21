@@ -4,15 +4,15 @@
 
 <div class="things-section">
     <div class="text-box">
-        <p>PRINT'AI</p>
+
             <form method="POST">
 
-                {{ produktas.id }}
                 <h2>{{ produktas.name }}</h2>
-                {{ produktas.name }}
-                <p>{{ produktas.description }}</p>
-                <div>
-                    <label>Pasirinkite dydį</label>
+
+                <p class="product-description">{{ produktas.description }}</p>
+
+                <div class="select-container">
+                    <label for="size">Pasirinkite dydį</label>
                     <select name="size" id="size">
                         <option value="" selected>Pasirinkite...</option>
                         {% for size in sizes %}
@@ -20,8 +20,8 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div>
-                    <label>Pasirinkite koloritą</label>
+                <div class="select-container">
+                    <label for="color">Pasirinkite koloritą</label>
                     <select name="color" id="color">
                         <option value="" selected>Pasirinkite...</option>
                         {% for color in colors %}
@@ -29,8 +29,8 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="quantity-selector">
-                    <label>Pasirinkite kiekį</label>
+                <div class="select-container">
+                    <label for="quantity">Pasirinkite kiekį</label>
                         <select name="quantity" id="quantity">
                             <option value="" selected>Pasirinkite...</option>
                             {% for quantity in range(1, max_quantity+1) %}
@@ -40,44 +40,37 @@
                 </div>
                 <div>
                     {% if produktas.sale == True %}
-                        <p>Vieneto kaina: {{ produktas.sale_price }} EUR</p>
-                        <p class="strikethrough">{{ produktas.price }} EUR</p>
+                    <div class="product-description">
+                        <p> Vieneto kaina: {{ produktas.sale_price }} EUR <span class="strikethrough">{{ produktas.price }} EUR</span></p>
+                    </div>
                     {% else %}
                         <p>Vieneto kaina: {{ produktas.price }} EUR</p>
                     {% endif %}
                 </div>
                 <div>
-                
-                        <button type="submit">Į krepšelį</button>
-                    
+                        <button type="submit" class="cart-button">Į krepšelį</button>
                 </div>
             </form>
     </div>
 
 
-    <div class="picture-box-things">
-        {% for photo in photos %}
-            <img src="{{url_for('static', filename='images/'+ photo.name)}}">
-        {% endfor %}
-    </div>
-</div>
-<div>
-    <h2>ISTORIJA?</h2>
-</div>
-<div>
-    <div class="slider-frame">
-        <!-- <div class="slider-images"> -->
-        <div class="image-container">
-            <img src="{{url_for('static', filename='images/Print 1.jpg')}}">
+    <div class="pict-container">
+        <div class="pict-box">
+            {% for photo in photos %}
+                <div class="photo">
+                    <img src="{{ url_for('static', filename='images/' + photo.name) }}">
+                </div>
+            {% endfor %}
         </div>
-        <!-- </div> -->
     </div>
+    
 </div>
+
 <div>
-    <h2>PANAŠIOS PREKĖS</h2>
-    <div class="printai">
+    <h2 class="products-title">PANAŠIOS PREKĖS</h2>
+    <div class="products">
         {% for other_product in other_products %}
-                    <div class="print">
+                    <div class="product">
                         <div class="product-image">
                             <a href="{{ url_for('produktas', product_id=other_product.id) }}">
                                 {% for other_photo in other_photos %}
@@ -91,7 +84,11 @@
                             <a href="{{ url_for('produktas', product_id=other_product.id) }}">
                                 <h4>{{ other_product.name }}</h4>  
                             </a>
-                            <p>{{ other_product.price }} EUR</p>
+                            {% if other_product.sale == 1 %}
+                                <p>{{ other_product.sale_price }} EUR <span class="strikethrough">{{ other_product.price }} EUR</span></p>
+                            {% else %}
+                                <p>{{ other_product.price }} EUR</p>
+                            {% endif %}
                         </div>
                     </div>
         {% endfor %}

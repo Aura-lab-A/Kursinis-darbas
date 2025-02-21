@@ -2,11 +2,11 @@
 {% block title %}Index Page{% endblock %}
 {% block content %}
 
-{{ order.id }}
-<h2>Ačiū! Jūsų užsakymas pateiktas sėkmingai!</h2>
-<p>Užsakymo numeris: {{ order.order_no }}</p>
-<p>Užsakymo statusas: {{ order.status }}</p>
-<p>Užsakymo kaina: {{ order.total_price }}</p>
-
+<div class="order-info">
+    <h2>Ačiū! Jūsų užsakymas pateiktas sėkmingai!</h2>
+    <p>Užsakymo numeris: {{ order.order_no }}</p>
+    <p>Užsakymo statusas: {{ order.status }}</p>
+    <p>Užsakymo vertė: {{ order.total_price }} EUR</p>
+</div>
  
 {% endblock %}

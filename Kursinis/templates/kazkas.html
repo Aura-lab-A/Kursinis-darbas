@@ -1,50 +1,63 @@
 {% extends 'base.html' %}
 {% block title %}Index Page{% endblock %}
 {% block content %}
-    <h1>Hello, World!</h1>
 
-    <title>Flexbox Example</title>
-        <style>
-            .container {
-                display: flex;
-                justify-content: space-between;
-            }
-            .left-items {
-                display: flex;
-                justify-content: space-between;
-                flex: 1;
-            }
-            .right-items {
-                display: flex;
-                justify-content: flex-end;
-            }
-            .item {
-                margin: 0 10px;
-            }
-        </style>
 
-    <body>
-        <div class="container">
-            <div class="left-items">
-                <div class="item">Item 1</div>
-                <div class="item">Item 2</div>
-                <div class="item">Item 3</div>
+<div>
+    <div class="picture-frame">
+        <div class="picture-container">
+            <img src="{{url_for('static', filename='images/Nuotrauka_3.jpg')}}">
+        </div>
+    </div>
+</div>
+<div>
+    <h2 class="products-title">KAŽKAS: ...</h2>
+</div>
+
+
+<div class="products">
+    {% for smth in all_smths.items %}
+        <div class="product">
+            <div class="product-image">
+                <a href="{{ url_for('produktas', product_id=smth.id) }}">
+                    {% for photo in all_photos %}
+                        {% if photo.product_id == smth.id %}                        
+                            <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
+                        {% endif %}
+                    {% endfor %}                                 
+                </a>
             </div>
-            <div class="right-items">
-                <div class="item">Item 4</div>
-                <div class="item">Item 5</div>
-                <div class="item">Item 6</div>
+            <div class="product-name-price">
+                <a href="{{ url_for('produktas', product_id=smth.id) }}">
+                    <h4>{{ smth.name }}</h4>  
+                </a>
+                {% if smth.sale == 1 %}
+                    <p>{{ smth.sale_price }} EUR <span class="strikethrough">{{ smth.price }} EUR</span></p>
+                {% else %}
+                    <p>{{ smth.price }} EUR</p>
+                {% endif %}
             </div>
         </div>
-    </body>
-    </html>
-    
-
-    {% for post in posts %}
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.date }}, {{ post.author }}</p>
-        <hr>
-        <p>{{ post.content }}</p>
-        <hr>    
     {% endfor %}
+</div>
+
+
+
+<div class="pagination">
+    <a href="#" class="arrow">&laquo;</a>
+    {% for page_number in all_smths.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+        {% if page_number %}
+            {% if page_number==all_smths.page %}
+                <span span class="active">{{page_number}}</span>
+            {% else %}
+                <span><a href="{{url_for('kazkas', page=page_number)}}">{{page_number}}</a></span>
+            {% endif %}
+        {% else %}
+            <span>...</span>
+        {% endif %}
+    {% endfor %}
+    <a href="#" class="arrow">&raquo;</a>
+</div>
+
+
 {% endblock %}

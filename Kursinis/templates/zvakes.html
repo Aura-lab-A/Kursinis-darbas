@@ -3,76 +3,60 @@
 {% block content %}
 
     <div>
-        <div class="slider-frame">
-            <!-- <div class="slider-images"> -->
-            <div class="image-container">
-                <img src="{{url_for('static', filename='images/Zvake 1.jpg')}}">
+        <div class="picture-frame">
+            <div class="picture-container">
+                <img src="{{url_for('static', filename='images/Nuotrauka_2.jpg')}}">
             </div>
-            <!-- </div> -->
         </div>
     </div>
     <div>
-        <h2>ŽVAKĖS: rankomis supilstytos bičių vaško</h2>
+        <h2 class="products-title">ŽVAKĖS: rankomis pagamintos</h2>
     </div>
+
+    
     <div class="products">
-        <div class="product-row">
+        {% for candle in all_candles.items %}
             <div class="product">
                 <div class="product-image">
-                    <img src="{{url_for('static', filename='images/Zvake 2.jpg')}}">
+                    <a href="{{ url_for('produktas', product_id=candle.id) }}">
+                        {% for photo in all_photos %}
+                            {% if photo.product_id == candle.id %}                        
+                                <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
+                            {% endif %}
+                        {% endfor %}                                 
+                    </a>
                 </div>
                 <div class="product-name-price">
-                    <h4>ZVAKĖ</h4>
-                    <p>5 EUR</p>
+                    <a href="{{ url_for('produktas', product_id=candle.id) }}">
+                        <h4>{{ candle.name }}</h4>  
+                    </a>
+                    {% if candle.sale == 1 %}
+                        <p>{{ candle.sale_price }} EUR <span class="strikethrough">{{ candle.price }} EUR</span></p>
+                    {% else %}
+                        <p>{{ candle.price }} EUR</p>
+                    {% endif %}
                 </div>
             </div>
-            <div class="product">
-                <div class="product-image">
-                    <img src="{{url_for('static', filename='images/Zvake 2.jpg')}}">
-                </div>
-                <div class="product-name-price">
-                    <h4>ZVAKĖ</h4>
-                    <p>5 EUR</p>
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-image">
-                    <img src="{{url_for('static', filename='images/Zvake 2.jpg')}}">
-                </div>
-                <div class="product-name-price">
-                    <h4>ZVAKĖ</h4>
-                    <p>5 EUR</p>
-                </div>
-            </div>
-        </div>
-        <div class="product-row">
-            <div class="product">
-                <div class="product-image">
-                    <img src="{{url_for('static', filename='images/Zvake 2.jpg')}}">
-                </div>
-                <div class="product-name-price">
-                    <h4>ZVAKĖ</h4>
-                    <p>5 EUR</p>
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-image">
-                    <img src="{{url_for('static', filename='images/Zvake 2.jpg')}}">
-                </div>
-                <div class="product-name-price">
-                    <h4>ZVAKĖ</h4>
-                    <p>5 EUR</p>
-                </div>
-            </div>
-            <div class="product">
-                <div class="product-image">
-                    <img src="{{url_for('static', filename='images/Zvake 2.jpg')}}">
-                </div>
-                <div class="product-name-price">
-                    <h4>ZVAKĖ</h4>
-                    <p>5 EUR</p>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
     </div>
+
+
+
+    <div class="pagination">
+        <a href="#" class="arrow">&laquo;</a>
+        {% for page_number in all_candles.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+            {% if page_number %}
+                {% if page_number==all_candles.page %}
+                    <span class="active">{{page_number}}</span>
+                {% else %}
+                    <span><a href="{{url_for('zvakes', page=page_number)}}">{{page_number}}</a></span>
+                {% endif %}
+            {% else %}
+                <span>...</span>
+            {% endif %}
+        {% endfor %}
+        <a href="#" class="arrow">&raquo;</a>
+    </div>
+
 
 {% endblock %}

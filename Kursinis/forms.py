@@ -151,7 +151,7 @@ class DeliveryInfoForm(FlaskForm):
     country = StringField('Šalis', validators=[DataRequired()])
     postal_code = StringField('Pašto kodas', validators=[DataRequired()])
     payment_method = StringField('Mokėjimo metodas', validators=[DataRequired()])
-    submit = SubmitField('Patikti užsakymą')
+    submit = SubmitField('Pateikti užsakymą')
 
 
 

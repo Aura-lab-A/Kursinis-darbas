@@ -3,28 +3,20 @@
 {% block content %}
 
     <div>
-        <div class="slider-frame">
-            <!-- <div class="slider-images"> -->
-            <div class="image-container">
-                <img src="{{url_for('static', filename='images/Print 1.jpg')}}">
+        <div class="picture-frame">
+            <div class="picture-container">
+                <img src="{{url_for('static', filename='images/Nuotrauka_1.jpg')}}">
             </div>
-            <!-- </div> -->
         </div>
     </div>
     <div>
-        <h2>PRINT'AI: rankomis atspausti lino raižiniai</h2>
+        <h2 class="products-title">PRINT'AI: rankų darbo piešiniai</h2>
     </div>
 
-<!-- Sutvarkyti -->
-    <!-- <ul>
-        {% for printas in printai %}
-            <li> {{ print.name }}</li>
-        {% endfor %}
-    </ul> -->
 
-    <div class="printai">
+    <div class="products">
         {% for print in all_prints.items %}
-            <div class="print">
+            <div class="product">
                 <div class="product-image">
                     <a href="{{ url_for('produktas', product_id=print.id) }}">
                         {% for photo in all_photos %}
@@ -39,8 +31,7 @@
                         <h4>{{ print.name }}</h4>  
                     </a>
                     {% if print.sale == 1 %}
-                        <p>{{ print.sale_price }} EUR</p>
-                        <p class="strikethrough">{{ print.price }} EUR</p>
+                        <p>{{ print.sale_price }} EUR <span class="strikethrough">{{ print.price }} EUR</span></p>
                     {% else %}
                         <p>{{ print.price }} EUR</p>
                     {% endif %}
@@ -51,17 +42,22 @@
 
 
 
-    <div>
+    <div class="pagination">
+        <a href="#" class="arrow">&laquo;</a>
         {% for page_number in all_prints.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
             {% if page_number %}
-                {% if page_number==all_prints.page %}
-                    <span style="color: red">{{page_number}}</span>
+                {% if page_number == all_prints.page %}
+                    <span class="active">{{ page_number }}</span>
                 {% else %}
-                    <span><a href="{{url_for('printai', page=page_number)}}">{{page_number}}</a></span>
+                    <span><a href="{{ url_for('printai', page=page_number) }}">{{ page_number }}</a></span>
                 {% endif %}
             {% else %}
                 <span>...</span>
             {% endif %}
         {% endfor %}
+        <a href="#" class="arrow">&raquo;</a>
     </div>
+    
+
+    
 {% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Shop items{% endblock %}
+{% block content %}
+
+
+{% if inquires  %}    
+
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Žinutės ID</th>
+                <th scope="col">Siuntėjo vardas</th>
+                <th scope="col">Siuntėjo pavardė</th>
+                <th scope="col">Siuntėjo el. paštas</th>
+                <th scope="col">Žinute</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for inquire in inquires  %} 
+                <tr>
+                    <th scope="row">{{ inquire.id }}</th>
+                        <td>{{ inquire.name }}</td>
+                        <td>{{ inquire.surname }}</td>
+                        <td>{{ inquire.email }}</td>
+                        <td>{{ inquire.message }}</td>
+                </tr>
+            {% endfor  %} 
+        </tbody>
+    </table>
+
+{% else  %} 
+
+    <h2>Žinučių nėra.</h2>
+
+{% endif  %} 
+
+<div>
+    <a href="{{ url_for('admin') }}">Administratoriaus puslapis</a>
+</div>
+
+<div>
+    <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+</div>
+
+
+{% endblock %}

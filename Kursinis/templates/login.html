@@ -4,31 +4,13 @@
 
     <div>
         <h1>Prisijungti</h1>
-        <!-- <form method="POST" action="/login">
-            {{ form.csrf_token }}
-            <div>{{ form.email.label }} {{ form.email }}</div>
-            <div>{{ form.password.label }} {{ form.password }}</div>
-            <div>{{ form.submit }}</div>
-        </form> -->
-
-        <!-- {% if message %}
-            <p>{{ message }}</p>
-        {% endif %}
-        <form method="post">
-            <label for="username">Email:</label>
-            <input type="text" id="username" name="email" required><br><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required><br><br>
-            <input type="submit" value="Login">
-        </form> -->
-
         <h4>Neturite paskyros - <a href="{{ url_for('register') }}">Registruotis</a></h4>
     </div>
 
-    <div class="reg-log">
-        <form method='POST'>
+    <div>
+        <form class="reg-log-form" method='POST'>
             {{ form.hidden_tag() }}
-            <div class="reg-log">
+            <div>
                 {{ form.email.label(class="form-control-label") }}
                 {% if form.email.errors %}
                     {{ form.email(class="form-control form-control-lg is-invalid") }}
@@ -41,7 +23,7 @@
                     {{ form.email(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-            <div class="reg-log">
+            <div>
                 {{ form.password.label(class="form-control-label") }}
                 {% if form.password.errors %}
                     {{ form.password(class="form-control form-control-lg is-invalid") }}
@@ -54,11 +36,11 @@
                     {{ form.password(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-            <div class="reg-log">
+            <div>
                 {{ form.remember(class='form-check-input') }}
                 {{ form.remember.label(class='form-check-label') }}
             </div>
-            <div class="reg-log">
+            <div>
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
         </form>
