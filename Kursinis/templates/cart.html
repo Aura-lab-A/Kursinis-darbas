@@ -4,7 +4,7 @@
 
 {% if items_in_cart %}
 
-<h2>Prekės</h2>
+<h2 class="products-title">Prekės</h2>
 
 <div clas="cart">
 
@@ -32,6 +32,9 @@
                         <p>Spalva: {{ item.color }}</p>
                         <p>Kiekis: {{ item.quantity }}</p>
                         <p>Vieneto kaina: {{ item.price }} EUR</p>
+                        {% if item.sale == True %}
+                            <p>Kaina su nuolaida: {{ item.sale_price }} EUR</p>
+                        {% endif %}
                     </div>
                     <div>
                         <a href="{{ url_for('delete_cart_item', id=item.id) }}">Pašalinti</a>

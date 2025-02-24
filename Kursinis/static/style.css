@@ -102,6 +102,13 @@ header {
     transform: scale(1.2);
 }
 
+#cart-count p {
+    font-size: 10px;
+    color: #116e9c;
+    float: right;
+    padding: 0px;
+}
+
 .container2 {
     display: flex;
     display: inline;
@@ -793,11 +800,61 @@ body {
 
 
 
+/* Body - Account */
+
+.account {
+    margin-left: 50px;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+.account-form label {
+    margin-left:40px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.account-form input[type="text"], input[type="email"], input[type="password"] {
+    display: block;
+    margin-left:40px;
+    width: 50%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    box-sizing: border-box; 
+}
+
+.account-form input[type="submit"] {
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-bottom:20px;
+    padding: 15px 25px;
+    border: none;
+    background-color: #116e9c;
+    color: white;
+    font-size: 16px; 
+    font-weight: bold;
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+}
+
+.account-form input[type="submit"]:hover {
+    background-color: #0056b3; 
+}
+
 
 /* Footer */
 
 footer {
-    position: sticky;
+    /* position: sticky; */
     bottom: 0;
     background-color: #f2f2f2;
     color: #2A94CA;

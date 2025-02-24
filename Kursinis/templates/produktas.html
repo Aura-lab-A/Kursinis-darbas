@@ -13,8 +13,8 @@
 
                 <div class="select-container">
                     <label for="size">Pasirinkite dydį</label>
-                    <select name="size" id="size">
-                        <option value="" selected>Pasirinkite...</option>
+                    <select name="size" id="size" required>
+                        <option value="" disabled selected>Pasirinkite...</option>
                         {% for size in sizes %}
                             <option value="{{ size.size }}">{{ size.size }}</option>
                         {% endfor %}
@@ -22,8 +22,8 @@
                 </div>
                 <div class="select-container">
                     <label for="color">Pasirinkite koloritą</label>
-                    <select name="color" id="color">
-                        <option value="" selected>Pasirinkite...</option>
+                    <select name="color" id="color" required>
+                        <option value="" disabled selected>Pasirinkite...</option>
                         {% for color in colors %}
                             <option value="{{ color.color }}">{{ color.color }}</option>
                         {% endfor %}
@@ -31,8 +31,8 @@
                 </div>
                 <div class="select-container">
                     <label for="quantity">Pasirinkite kiekį</label>
-                        <select name="quantity" id="quantity">
-                            <option value="" selected>Pasirinkite...</option>
+                        <select name="quantity" id="quantity" required>
+                            <option value="" disabled selected>Pasirinkite...</option>
                             {% for quantity in range(1, max_quantity+1) %}
                                 <option value="{{ quantity }}">{{ quantity }}</option>
                             {% endfor %}
@@ -48,7 +48,7 @@
                     {% endif %}
                 </div>
                 <div>
-                        <button type="submit" class="cart-button">Į krepšelį</button>
+                    <button type="submit" class="cart-button">Į krepšelį</button>
                 </div>
             </form>
     </div>

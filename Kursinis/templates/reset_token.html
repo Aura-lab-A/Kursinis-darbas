@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Password reset{% endblock %}
+{% block content %}
+
+<div>
+    <form class="account-form" method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset>
+            <legend>Slaptažodžio pakeitimas</legend>
+            <div>
+                {{ form.password.label }}
+                {% if form.password.errors %}
+                    {{ form.password }}
+                    <div>
+                        {% for error in form.password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.password }}
+                {% endif %}
+            </div>
+            <div>
+                {{ form.confirm_password.label }}
+                {% if form.confirm_password.errors %}
+                    {{ form.confirm_password }}
+                    <div>
+                        {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.confirm_password }}
+                {% endif %}
+            </div>
+        </fieldset>
+        <div>
+            {{ form.submit }}
+        </div>
+    </form>
+</div>
+
+        
+{% endblock %}

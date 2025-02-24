@@ -2,17 +2,22 @@
 {% block title %}Account Page{% endblock %}
 {% block content %}
 
-<a href="{{ url_for('logout') }}">Atsijungti</a>
+<div>
+    <form action="{{ url_for('logout') }}"> 
+        <button type="submit" class="cart-button">Atsijungti</button>
+    </form>    
+</div>
 
-    <h4>Profilis</h4>
 
-        <p>Name: {{ current_user.name }}</p>
-        <p>Email: {{ current_user.email }}</p>
+    <h2 class="products-title">Profilis</h2>
+
+        <p class="account">Vardas: {{ current_user.name }}</p>
+        <p class="account">El. paštas: {{ current_user.email }}</p>
 
 
-    <h4>Atnaujinti profilį</h4>
+    <h2 class="products-title">Atnaujinti profilį</h2>
 
-        <form method='POST'>
+        <form class="account-form" method='POST'>
             {{ form.hidden_tag() }}
             <div>
                 {{ form.name.label }}
@@ -56,17 +61,18 @@
 {% endif %}
 
 
-    <h4>Ankstesni užsakymai</h4>
-
-        <div class="orders">
-            {% for order in orders %}
-                <a href="{{ url_for('order_details', order_id=order.id) }}">
-                    <p>Užsakymo numeris: {{ order.order_no }}</p>
-                    <p>Užsakymo data: {{ order.created_on }}</p>
-                    <p>Užsakymo vertė: {{ order.total_price }}</p>
-                    <p>Užsakymo statusas: {{ order.status }}</p>
-                </a>
-            {% endfor %}
+    <h2 class="products-title">Ankstesni užsakymai</h2>
+        <div class="cart-item-container">
+            <div class="cart-item">
+                {% for order in orders %}
+                    <a href="{{ url_for('order_details', order_id=order.id) }}">
+                        <p>Užsakymo numeris: {{ order.order_no }}</p>
+                        <p>Užsakymo data: {{ order.created_on }}</p>
+                        <p>Užsakymo vertė: {{ order.total_price }} EUR</p>
+                        <p>Užsakymo statusas: {{ order.status }}</p>
+                    </a>
+                {% endfor %}
+            </div>
         </div>
 
 

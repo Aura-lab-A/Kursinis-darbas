@@ -3,7 +3,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, FloatField, IntegerField, DecimalField, EmailField, DateField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, NumberRange, Optional, Regexp
 from flask_wtf.file import FileField, FileRequired, FileAllowed
-from datetime import datetime, timedelta
 from Kursinis import User, Product, current_user, app
 
 
@@ -29,21 +28,13 @@ class RegisterForm(FlaskForm):
             if user:
                 raise ValidationError('Šis vartotojo vardas jau yra užregistruotas.')
 
+
 class LoginForm(FlaskForm):
     email = EmailField('El. paštas', validators=[DataRequired(), Email()])
     password = PasswordField('Slaptažodis', validators=[DataRequired()])
     remember = BooleanField('Prisiminti')
     submit = SubmitField('Prisijungti')
 
-# Gal ateityje galima bus panaudoti
-# class ProfileUpdateForm(FlaskForm):
-#     name = StringField('Vardas', [DataRequired()])
-#     email = StringField('El. paštas', [DataRequired(), Email()])
-#     submit = SubmitField('Atnaujinti')
-
-# class ChangePassword(Form):
-#     password = PasswordField('New Password', [InputRequired(), EqualTo('confirm', message='Passwords must match')])
-#     confirm  = PasswordField('Repeat Password')
 
 class AccountUpdateForm(FlaskForm):
     name = StringField('Vardas', [DataRequired()])
@@ -61,6 +52,7 @@ class AccountUpdateForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user:
                 raise ValidationError('Šis el. pašto adresas panaudotas. Pasirinkite kitą.')
+
 
 class ResetRequestForm(FlaskForm):
     email = StringField('El. paštas', validators=[DataRequired(), Email()])
@@ -103,40 +95,6 @@ class AddPhotoForm(FlaskForm):
     photo2 = FileField('Pridėti nuotrauką #2', validators=[FileAllowed(['jpg', 'png'])])
     photo3 = FileField('Pridėti nuotrauką #3', validators=[FileAllowed(['jpg', 'png'])])
     add_photo = SubmitField('Pridėti')
-
-
-
-
-# Šitų net nereikia????
-
-# class CartForm(FlaskForm):
-#     product_id = IntegerField('Produkto ID', validators=[DataRequired()])
-#     product_name = StringField('Produkto vardas', validators=[DataRequired()])
-#     size = StringField('Produkto dydis', validators=[DataRequired()])
-#     color = StringField('Produkto spalva', validators=[DataRequired()])
-#     quantity = IntegerField('Kiekis', validators=[DataRequired(), NumberRange(min=0)])
-#     price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
-#     sale_price = FloatField('Išpardavimo kaina', validators=[DataRequired()])
-#     added_at = DateField('Data', validators=[DataRequired()])
-#     # user_id
-#     submit = SubmitField('Į krepšelį')
-
-# class OrderItemForm(FlaskForm):
-#     product_id = IntegerField('Produkto ID', validators=[DataRequired()])
-#     product_name = StringField('Producto vardas', validators=[DataRequired()])
-#     size = StringField('Produkto dydis', validators=[DataRequired()])
-#     color = StringField('Produkto spalva', validators=[DataRequired()])
-#     quantity = IntegerField('Kiekis', validators=[DataRequired(), NumberRange(min=0)])
-#     price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
-#     submit = SubmitField('Patvirtinti prekes')
-
-# class Orders(FlaskForm):
-#     order_no = IntegerField('Užsakymo ID', validators=[DataRequired()])
-#     created_on = StringField('Data', validators=[DataRequired()])     #date????
-#     total_price = DecimalField('Kaina', validators=[DataRequired(), NumberRange(min=0)])
-#     status = StringField('Statusas', validators=[DataRequired()])  #list of statuses
-#     # user_id 
-#     submit = SubmitField('Pateikti užsakymą')
 
 
 class DeliveryInfoForm(FlaskForm):

@@ -1,15 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Index Page{% endblock %}
 {% block content %}
+
+
     <h1>Hello, World!</h1>
 
-    <!-- Nereikalingas -->
-    <p>{{ posts }}</p>
-    {% for post in posts %}
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.date }}, {{ post.author }}</p>
-        <hr>
-        <p>{{ post.content }}</p>
-        <hr>    
-    {% endfor %}
+
 {% endblock %}

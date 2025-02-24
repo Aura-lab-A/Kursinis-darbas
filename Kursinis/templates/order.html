@@ -12,16 +12,6 @@
             {% for item in items_in_cart %}
                 <div class="cart-item">
 
-                    <div class="cart-image">
-                        <a href="{{ url_for('produktas', product_id=item.product_id) }}">
-                            {% for photo in items_in_cart_photos %}
-                                {% if photo.product_id == item.product_id %}                        
-                                    <img src="{{ url_for('static', filename='images/'+ photo.name) }}">
-                                {% endif %}
-                            {% endfor %}                                 
-                        </a>
-                    </div>
-
                     <div class="item-name-price">
                         <a href="{{ url_for('produktas', product_id=item.product_id) }}">
                             <h4>{{ item.product_name }}</h4>  
@@ -30,6 +20,9 @@
                         <p>Spalva: {{ item.color }}</p>
                         <p>Kiekis: {{ item.quantity }}</p>
                         <p>Vieneto kaina: {{ item.price }} EUR</p>
+                        {% if item.sale == True %}
+                            <p>Kaina su nuolaida: {{ item.sale_price }} EUR</p>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -42,7 +35,7 @@
     <h1>Pristatymo informacija</h1>
 
         <form class="delivery-form" method='POST'>
-            {{ form.hidden_tag() }}
+
             <div>
                 {{ form.name.label }}
 

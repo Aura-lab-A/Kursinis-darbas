@@ -5,8 +5,8 @@ from flask_bcrypt import Bcrypt
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, current_user
-# from flask_mail import Mail
-# from biudzetas.email_settings import *
+from flask_mail import Mail
+from Kursinis.email_settings import *
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -29,10 +29,10 @@ from Kursinis.models import User, Product
 from Kursinis.models import *
 
 bcrypt = Bcrypt(app)
-# mail = Mail(app)
+mail = Mail(app)
 
 login_manager = LoginManager(app)
-# login_manager.login_view = 'home'
+
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 login_manager.login_message = 'Log in to see this page.'
@@ -54,8 +54,9 @@ admin.add_view(AdminModelView(Product, db.session))
 admin.add_view(AdminModelView(Photo, db.session))
 admin.add_view(AdminModelView(Color, db.session))
 
-# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-# app.config['MAIL_PORT'] = 587
-# app.config['MAIL_USE_TLS'] = True
-# app.config['MAIL_USERNAME'] = MAIL_USERNAME
-# app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = MAIL_USERNAME
+app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
+

@@ -1,8 +1,7 @@
 
-from datetime import datetime, timedelta
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, DateTime, Boolean, func
+from datetime import datetime
 from flask_login import UserMixin
+from itsdangerous import TimedSerializer as Serializer
 from Kursinis import app, db
 
 
@@ -10,14 +9,28 @@ from Kursinis import app, db
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True)   #nullable=False, default='-'
-    email = db.Column(db.String(120), unique=True)     #nullable=False, default='-'
-    password = db.Column(db.String(120)) #nullable=False, default='-'
-    date_register = db.Column(db.String(120))   #nullable=False
-    account = db.relationship('Account', back_populates='user', uselist=False)    #uselist=False
-    cart = db.relationship('Cart', back_populates='user', uselist=False)   #uselist=False???
+    name = db.Column(db.String(120), nullable=False, unique=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(120), nullable=False)
+    date_register = db.Column(db.String(120), nullable=False)
+    cart = db.relationship('Cart', back_populates='user', uselist=False)
     orders = db.relationship('Orders', back_populates='user')
-    delivery_info = db.relationship('DeliveryInfo', back_populates='user')
+
+    def get_reset_token(self):
+        s = Serializer(app.config['SECRET_KEY'])
+        # return s.dumps({'user_id': self.id}).decode('utf-8')
+        token = s.dumps({'user_id': self.id})
+        return token
+    
+    @staticmethod
+    def verify_reset_token(token, expires_sec=180):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token, max_age = expires_sec)['user_id']
+        except Exception as e:
+            print(e)
+            return None
+        return User.query.get(user_id)
 
 
 class Visitor(db.Model):
@@ -25,47 +38,8 @@ class Visitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cookie_id = db.Column(db.String(36), unique=True, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    cart = db.relationship('Cart', back_populates='visitor', uselist=False)   #uselist=False???
+    cart = db.relationship('Cart', back_populates='visitor', uselist=False)
     orders = db.relationship('Orders', back_populates='visitor')
-    delivery_info = db.relationship('DeliveryInfo', back_populates='visitor')
-
-#Šito gal nereikia:
-class Account(db.Model):
-    __tablename__ = 'accounts'
-    id = db.Column(db.Integer, primary_key=True)
-    bio = db.Column(db.Text)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    user = db.relationship('User', back_populates='account')
-
-# class Vartotojas(db.Model, UserMixin):
-#     __tablename__ = "vartotojas"
-#     id = db.Column(db.Integer, primary_key=True)
-#     vardas = db.Column("Vardas", db.String(20), unique=True, nullable=False)
-#     el_pastas = db.Column("El. pašto adresas", db.String(120), unique=True, nullable=False)
-#     nuotrauka = db.Column(db.String(20), nullable=False, default='default.jpg')
-#     slaptazodis = db.Column("Slaptažodis", db.String(60), unique=True, nullable=False)
-
-#     def get_reset_token(self, expires_sec=1800):
-#         s = Serializer(app.config['SECRET_KEY'], expires_sec)
-#         return s.dumps({'user_id': self.id}).decode('utf-8')
-
-#     @staticmethod
-#     def verify_reset_token(token):
-#         s = Serializer(app.config['SECRET_KEY'])
-#         try:
-#             user_id = s.loads(token)['user_id']
-#         except:
-#             return None
-#         return Vartotojas.query.get(user_id)
-
-class VisitorInquire(db.Model):
-    __tablename__ = 'customer_inquires'    #visitor inquires
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
-    surname = db.Column(db.String(120))
-    email = db.Column(db.String(120), nullable=False)
-    message = db.Column(db.Text)
-
 
 
 #Produktai
@@ -82,7 +56,7 @@ product_color_association = db.Table('product_color',
 class Product(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)    #unique=True
+    name = db.Column(db.String(50), nullable=False, unique=True)
     description = db.Column(db.String(320), nullable=False)  #unique=True
     price = db.Column(db.Float, nullable=False)
     sale_price = db.Column(db.Float, nullable=False)
@@ -97,11 +71,10 @@ class Product(db.Model):
     ordered_items = db.relationship('OrderedItems', back_populates='product')
 
 
-
 class Photo(db.Model):
     __tablename__ = 'photos'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)    #unique=True
+    name = db.Column(db.String(50), nullable=False)   #unique=True
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     product = db.relationship('Product', back_populates='photos')
 
@@ -109,14 +82,14 @@ class Photo(db.Model):
 class Size(db.Model):
     __tablename__ = 'sizes'
     id = db.Column(db.Integer, primary_key=True)
-    size = db.Column(db.String(50), nullable=False)    #unique=True
+    size = db.Column(db.String(50), unique=True, nullable=False)
     products = db.relationship('Product', secondary=product_size_association, back_populates='sizes')
 
 
 class Color(db.Model):
     __tablename__ = 'colors'
     id = db.Column(db.Integer, primary_key=True)
-    color = db.Column(db.String(50), nullable=False)    #unique=True
+    color = db.Column(db.String(50), unique=True, nullable=False)
     products = db.relationship('Product', secondary=product_color_association, back_populates='colors')
 
 
@@ -126,7 +99,6 @@ class Color(db.Model):
 class Cart(db.Model):
     __tablename__ = 'cart'
     id = db.Column(db.Integer, primary_key=True)
-    # product_id = db.Column(db.Integer, nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     product = db.relationship('Product', back_populates='cart')
     product_name = db.Column(db.String(120), nullable=False)
@@ -138,9 +110,10 @@ class Cart(db.Model):
     sale = db.Column(db.Boolean, default=False)
     added_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User', back_populates='cart')    #lazy=True insted of back_populates
+    user = db.relationship('User', back_populates='cart')
     visitor_id = db.Column(db.Integer, db.ForeignKey('visitors.id'))
-    visitor = db.relationship('Visitor', back_populates='cart')    #lazy=True insted of back_populates
+    visitor = db.relationship('Visitor', back_populates='cart')
+
 
 class Orders(db.Model):
     __tablename__ = 'orders'
@@ -148,18 +121,18 @@ class Orders(db.Model):
     order_no = db.Column(db.String(20), nullable=False)
     created_on = db.Column(db.DateTime, default=datetime.now, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(20), nullable=False)   #list of statuse
+    status = db.Column(db.String(20), nullable=False)
     ordered_items = db.relationship('OrderedItems', back_populates='order')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User', back_populates='orders')   #lazy=True insted of back_populates
+    user = db.relationship('User', back_populates='orders')
     visitor_id = db.Column(db.Integer, db.ForeignKey('visitors.id'))
-    visitor = db.relationship('Visitor', back_populates='orders')   #lazy=True insted of back_populates
+    visitor = db.relationship('Visitor', back_populates='orders')
     delivery_info = db.relationship('DeliveryInfo', back_populates='order', uselist=False)
+
 
 class OrderedItems(db.Model):
     __tablename__ = 'ordered_items'
     id = db.Column(db.Integer, primary_key=True)
-    # product_id = db.Column(db.Integer, nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'))
     product = db.relationship('Product', back_populates='ordered_items')
     product_name = db.Column(db.String(120), nullable=False)
@@ -169,29 +142,34 @@ class OrderedItems(db.Model):
     price = db.Column(db.Float(120), nullable=False)
     sale_price = db.Column(db.Float, nullable=False)
     sale = db.Column(db.Boolean, default=False)
-    oder_no = db.Column(db.Integer, nullable=False)
+    order_no = db.Column(db.Integer, nullable=False)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
-    order = db.relationship('Orders', back_populates='ordered_items')   #lazy=True insted of back_populates
+    order = db.relationship('Orders', back_populates='ordered_items')
+
 
 class DeliveryInfo(db.Model):
     __tablename__ = 'delivery_info'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     surname = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(120), nullable=False)   #email format
-    phone_no = db.Column(db.Integer, nullable=False)    #not integer
+    email = db.Column(db.String(120), nullable=False)
+    phone_no = db.Column(db.Integer, nullable=False)
     street = db.Column(db.String(120), nullable=False)
     street_number = db.Column(db.Integer, nullable=False)
-    flat_number = db.Column(db.Integer, nullable=False)  #not needed
+    flat_number = db.Column(db.Integer, nullable=False)
     city = db.Column(db.String(120), nullable=False)
     country = db.Column(db.String(120), nullable=False)
     postal_code = db.Column(db.String(120), nullable=False)
     payment_method = db.Column(db.String(120), nullable=False, default='Bank transfer')
-    order_no = db.Column(db.Integer, nullable=False)    #not integer
+    order_no = db.Column(db.String(120), nullable=False)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'))
     order = db.relationship('Orders', back_populates='delivery_info')
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User', back_populates='delivery_info') #lazy=True insted of back_populates
-    visitor_id = db.Column(db.Integer, db.ForeignKey('visitors.id'))
-    visitor = db.relationship('Visitor', back_populates='delivery_info') #lazy=True insted of back_populates
 
+
+class VisitorInquire(db.Model):
+    __tablename__ = 'visitor_inquires'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    surname = db.Column(db.String(120))
+    email = db.Column(db.String(120), nullable=False)
+    message = db.Column(db.Text)

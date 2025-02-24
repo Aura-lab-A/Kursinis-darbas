@@ -42,9 +42,25 @@
 
     <h2>Tokio produkto nėra.</h2>
 
+    <div>
+        <a href="{{ url_for('display_shop_items') }}">Peržiūrėti visas prekes</a>
+        <a href="{{ url_for('admin') }}">Administratoriaus puslapis</a>
+    </div>
+    
+    <div>
+        <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+    </div>
+
 {% endif  %}
 
+<div>
+    <a href="{{ url_for('display_shop_items') }}">Peržiūrėti visas prekes</a>
+    <a href="{{ url_for('admin') }}">Administratoriaus puslapis</a>
+</div>
 
+<div>
+    <a href="{{ url_for('home') }}">Pradžios puslapis</a>
+</div>
 
 
 

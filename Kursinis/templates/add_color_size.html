@@ -5,28 +5,29 @@
 
 
     <div class="container">
-        <h1>Add Color and Size for {{ product.name }}</h1>
+        <h1>Prid4ti spalvas ir dydžius {{ product.name }}</h1>
         <form method="POST">
-            <label for="color">Select Color:</label>
+            <label for="color">Pasirinkite spalvą:</label>
             <select name="color" id="color">
                 {% for color in colors %}
                 <option value="{{ color.id }}">{{ color.color }}</option>
                 {% endfor %}
             </select>
             
-            <label for="size">Select Size:</label>
+            <label for="size">Pasirinkite dydį:</label>
             <select name="size" id="size">
                 {% for size in sizes %}
                 <option value="{{ size.id }}">{{ size.size }}</option>
                 {% endfor %}
             </select>
             
-            <button type="submit">Add Color and Size</button>
+            <button type="submit">Pridėti</button>
         </form>
     </div>
 
 
 <div>
+    <a href="{{ url_for('add_shop_items') }}">Pridėti kitą prekę</a>
     <a href="{{ url_for('display_shop_items') }}">Peržiūrėti visas prekes</a>
     <a href="{{ url_for('admin') }}">Administratoriaus puslapis</a>
 </div>
