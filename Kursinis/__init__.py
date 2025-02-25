@@ -50,9 +50,7 @@ class AdminModelView(ModelView):
 from Kursinis import routes
 admin = Admin(app)
 admin.add_view(AdminModelView(User, db.session))
-admin.add_view(AdminModelView(Product, db.session))
-admin.add_view(AdminModelView(Photo, db.session))
-admin.add_view(AdminModelView(Color, db.session))
+
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587

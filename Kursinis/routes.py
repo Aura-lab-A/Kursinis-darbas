@@ -601,10 +601,10 @@ def apie_mus() -> Response:
 
 #ADMINISTRATORIUS
 
-@app.route('/admin')
+@app.route('/admin_page')
 @login_required
-def admin():
-    return render_template('admin.html')
+def admin_page():
+    return render_template('admin_page.html')
 
 
 @app.route('/display_shop_items', methods=['GET', 'POST'])
