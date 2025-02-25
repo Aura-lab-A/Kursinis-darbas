@@ -646,9 +646,7 @@ def save_picture(form_picture):
         _, f_ext = os.path.splitext(form_picture.filename)
         picture_fn = random_hex + f_ext
         picture_path = os.path.join(app.root_path, 'static/images', picture_fn)
-        # output_size = (125, 125)
         i = Image.open(form_picture)
-        # i.thumbnail(output_size)
         i.save(picture_path)
         return picture_fn
 
@@ -742,15 +740,11 @@ def update_shop_item(product_id):
             product_to_update.sale = form.sale.data
             product_to_update.quantity = form.quantity.data
             product_to_update.category = form.category.data
-            #photo
             db.session.commit()
             flash('Produktas atnaujintas sėkmingai!', 'success')
             return redirect(url_for('display_shop_items'))
         return render_template('update_shop_item.html', form=form, product_to_update=product_to_update)
-    else:
-        flash('Unauthorized access', 'danger')
-        return redirect(url_for('home'))
-    # return render_template('404.html')   # ar čia geras return?
+    return render_template('404.html')
 
 
 @app.route("/delete_shop_item/<int:product_id>", methods=['GET', 'POST'])
@@ -760,13 +754,8 @@ def delete_shop_item(product_id):
         db.create_all()
         product_to_delete = Product.query.get(product_id)
         db.session.delete(product_to_delete)
-
-        # photos_to_delete = Photo.query.filter_by(product_id = product_to_delete.id).all()
-        # for photo in photos_to_delete:
-        #     db.session.delete(photo)
-
         db.session.commit()
-        flash('Produktas ištrintas sėkmingai!', 'success')    #exemption could be included
+        flash('Produktas ištrintas sėkmingai!', 'success')
         return redirect(url_for('display_shop_items'))
     return render_template('404.html')
 
