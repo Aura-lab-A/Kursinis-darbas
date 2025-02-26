@@ -33,7 +33,6 @@ def search():
 
 @app.before_request
 def set_visitor_cookie():
-    db.create_all()
     cookie_id = request.cookies.get('visitor_cookie')
     if not cookie_id:
         cookie_id = str(uuid.uuid4())
@@ -66,7 +65,6 @@ def get_vistors_count():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    db.create_all()
     if current_user.is_authenticated:
         return redirect(url_for('account'))
     form = forms.RegisterForm()
@@ -98,7 +96,6 @@ def login():
 
 
 def send_reset_email(user):
-    db.create_all()
     token = user.get_reset_token()
     msg = Message('Slaptažodžio atnaujinimo užklausa',
                   sender='aurelija.kursai@gmail.com',
@@ -112,7 +109,6 @@ def send_reset_email(user):
 
 @app.route("/password_request", methods=['GET', 'POST'])
 def password_request():
-    db.create_all()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = forms.ResetRequestForm()
@@ -130,7 +126,6 @@ def password_request():
 
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
-    db.create_all()
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     user = User.verify_reset_token(token)
@@ -157,7 +152,6 @@ def logout():
 @app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    db.create_all()
     if request.method == 'GET':
         orders = Orders.query.filter(Orders.user_id == current_user.id).all()
         form = forms.AccountUpdateForm()
@@ -175,7 +169,6 @@ def account():
 @app.route('/order_details/<int:order_id>')
 @login_required
 def order_details(order_id):
-    db.create_all()
     order = Orders.query.filter(
         Orders.user_id == current_user.id,
         Orders.id == order_id).first()
@@ -188,7 +181,6 @@ def order_details(order_id):
 
 @app.route('/home', methods=['GET', 'POST'])
 def home() -> Response:
-    db.create_all()
     form = forms.ContactForm()
     if form.validate_on_submit():
         new_inquire = VisitorInquire(
@@ -245,7 +237,6 @@ def kazkas() -> Response:
 
 @app.route('/produktas/<int:product_id>', methods=['GET', 'POST'])
 def produktas(product_id) -> Response:
-    db.create_all()
 
     if request.method == 'GET':
         produktas = Product.query.get(product_id)
@@ -337,7 +328,6 @@ def produktas(product_id) -> Response:
 def updated_cart():
     now = datetime.now()
     time_span = timedelta(minutes=2)
-    db.create_all()
     if current_user.is_authenticated:
         old_items = Cart.query.filter(Cart.added_at < now - time_span).all()
         for old_item in old_items:
@@ -418,7 +408,6 @@ def cart() -> Response:
     
 
 def new_order_func(order_number, total_price, visitor):
-    db.create_all()
     new_order = Orders(
         order_no = order_number,
         created_on = datetime.now(),
@@ -432,7 +421,6 @@ def new_order_func(order_number, total_price, visitor):
 
 
 def new_order_func_user(order_number, total_price, current_user, visitor):
-    db.create_all()
     new_order = Orders(
         order_no = order_number,
         created_on = datetime.now(),
@@ -447,7 +435,6 @@ def new_order_func_user(order_number, total_price, current_user, visitor):
 
 
 def new_ordered_item_func(product_id, product_name, size, color, quantity, price, sale_price, sale, order_number, new_order):
-    db.create_all()
     new_ordered_item = OrderedItems(
         product_id = product_id,
         product_name = product_name,
@@ -466,7 +453,6 @@ def new_ordered_item_func(product_id, product_name, size, color, quantity, price
 
 
 def delivery_info_func(order_number, new_order):
-    db.create_all()
     delivery_info = DeliveryInfo(
         name=request.form.get('name'),
         surname=request.form.get('surname'),             
@@ -492,7 +478,6 @@ def order() -> Response:
     if not cookie_id:
         return set_visitor_cookie()
     visitor = Visitor.query.filter_by(cookie_id = cookie_id).first()
-    db.create_all()
     if request.method == 'GET':
         items_in_cart = updated_cart()
         if not items_in_cart:
@@ -502,7 +487,6 @@ def order() -> Response:
             form = forms.DeliveryInfoForm()
             return render_template('order.html', items_in_cart=items_in_cart, total_price=total_price, form=form)
     else:
-        db.create_all()
         if current_user.is_authenticated:
             items_in_cart = updated_cart()
             if not items_in_cart:
@@ -536,7 +520,6 @@ def order() -> Response:
                 return redirect(url_for('order_info', order_id=new_order.id, form=form))
             
         else:
-            db.create_all()
             items_in_cart = updated_cart()
             if not items_in_cart:
                 return "Krepšelyje prekių nėra."
@@ -620,7 +603,6 @@ def display_shop_items():
 @login_required
 def add_shop_items():
     if current_user.name == 'admin':
-        db.create_all
         form = forms.ShopItemsForm()
         if form.validate_on_submit():
             add_product = Product(
@@ -655,7 +637,6 @@ def save_picture(form_picture):
 @login_required
 def add_photo(product_id):
     if current_user.name == 'admin':
-        db.create_all()
         form = forms.AddPhotoForm()
         if form.validate_on_submit():
             if form.photo1.data:
@@ -689,7 +670,6 @@ def add_photo(product_id):
 @app.route('/add_color_size/<int:product_id>', methods=['GET', 'POST'])
 @login_required
 def add_color_size(product_id):
-    db.create_all()
     if current_user.name == 'admin':
         product = Product.query.get(product_id)
         if request.method == 'POST':
@@ -720,7 +700,6 @@ def add_color_size(product_id):
 def update_shop_item(product_id):
     if current_user.name == 'admin':
         
-        db.create_all()
         form = forms.ShopItemsForm()
         product_to_update = Product.query.get(product_id)
 
@@ -751,7 +730,6 @@ def update_shop_item(product_id):
 @login_required
 def delete_shop_item(product_id):
     if current_user.name == 'admin':
-        db.create_all()
         product_to_delete = Product.query.get(product_id)
         db.session.delete(product_to_delete)
         db.session.commit()
@@ -762,7 +740,6 @@ def delete_shop_item(product_id):
 @app.route('/orders', methods=['GET', 'POST'])
 @login_required
 def orders():
-    db.create_all
     if current_user.name == 'admin':
         all_orders = Orders.query.all()
         return render_template('orders.html', all_orders=all_orders)
@@ -771,7 +748,6 @@ def orders():
 @app.route('/update_order_status/<int:order_id>', methods=['GET', 'POST'])
 @login_required
 def update_order_status(order_id):
-    db.create_all
     if current_user.name == 'admin':
         order_statuses = ['Pateiktas', 'Paruoštas', 'Išsiųstas', 'Baigtas', 'Problema']
         order = Orders.query.get(order_id)
@@ -788,7 +764,6 @@ def update_order_status(order_id):
 @login_required
 def display_visitor_inquires():
     if current_user.name == 'admin':
-        db.create_all
         inquires = VisitorInquire.query.all()
         return render_template('display_visitor_inquires.html', inquires=inquires)
     return render_template('404.html')
