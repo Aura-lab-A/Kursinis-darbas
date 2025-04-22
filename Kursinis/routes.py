@@ -222,8 +222,8 @@ def zvakes() -> Response:
     return render_template('zvakes.html', all_candles=all_candles, all_photos=all_photos)
 
 
-@app.route('/kazkas')
-def kazkas() -> Response:
+@app.route('/other')
+def other() -> Response:
     page = request.args.get('page', 1, type=int)
     all_smths = Product.query.filter_by(category ='smth').paginate(page=page, per_page=6)
     smth_ids = [smth_item.id for smth_item in all_smths.items]
@@ -232,7 +232,7 @@ def kazkas() -> Response:
         func.min(Photo.id).label('min_id')
         ).filter(Photo.product_id.in_(smth_ids)).group_by(Photo.product_id).subquery()
     all_photos = db.session.query(Photo).join(subquery, Photo.id == subquery.c.min_id).all()
-    return render_template('kazkas.html', all_smths=all_smths, all_photos=all_photos)
+    return render_template('other.html', all_smths=all_smths, all_photos=all_photos)
 
 
 @app.route('/produktas/<int:product_id>', methods=['GET', 'POST'])

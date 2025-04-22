@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Index Page{% endblock %}
+{% block title %}KITA Page{% endblock %}
 {% block content %}
 
 
@@ -11,7 +11,7 @@
     </div>
 </div>
 <div>
-    <h2 class="products-title">KAŽKAS: ...</h2>
+    <h2 class="products-title">KITA: ...</h2>
 </div>
 
 
@@ -50,7 +50,7 @@
             {% if page_number==all_smths.page %}
                 <span span class="active">{{page_number}}</span>
             {% else %}
-                <span><a href="{{url_for('kazkas', page=page_number)}}">{{page_number}}</a></span>
+                <span><a href="{{url_for('other', page=page_number)}}">{{page_number}}</a></span>
             {% endif %}
         {% else %}
             <span>...</span>
